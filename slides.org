@@ -1,0 +1,160 @@
+#+TITLE:    Angular what's new (16.x -> 19.x)
+#+AUTHOR:   Claudio Marchiori
+#+LANGUAGE: it
+
+* Componenti Standalone\
+
+  - In Angular 16 è stata introdotta una nuova tipologia di componenti, le *standalone components*, che offrono un modo più semplice e modulare di sviluppare le applicazioni.
+  - La principale differenza rispetto ai componenti tradizionali è che non necessitano di essere dichiarati all'interno di un modulo NgModule. Questo semplifica la struttura e il boilerplate del codice, rendendolo più leggibile e manutenibile.
+  - Un componente standalone dichiara le proprie dipendenze (componenti, direttive e pipe) direttamente tramite la proprietà ~imports~ del decoratore ~@Component~.
+
+** Approccio con moduli (Angular < 16)
+
+#+begin_src typescript
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ButtonComponent } from './button.component';
+import { AnchorComponent } from './anchor.component';
+
+@NgModule({
+  declarations: [ButtonComponent, AnchorComponent, /* ... */],
+  imports: [
+    CommonModule,
+    MatIconModule,
+    MatButtonModule,
+    MatTooltipModule,
+    ReactiveFormsModule,
+    /* ... */
+  ],
+  exports: [ButtonComponent, AnchorComponent, /* ... */]
+})
+export class LinkModule { }
+#+end_src
+
+** Componenti Standalone
+
+Un componente standalone è un componente a tutti gli effetti, con la differenza che viene definito come tale tramite la proprietà ~standalone: true~ nel decoratore.
+
+#+begin_src typescript
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+
+@Component({
+  selector: 'app-my-component',
+  template: `
+    <p>This is a standalone component!</p>
+  `,
+  styles: [],
+  providers: [],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, /* ... */] // Qui si dichiarano le dipendenze
+})
+export class MyComponent { }
+#+end_src
+
+** Direttive Standalone
+
+Anche le direttive possono essere definite come standalone, utilizzando la stessa proprietà ~standalone: true~ nel decoratore ~@Directive~.
+
+#+begin_src typescript
+@Directive({
+  selector: '[appMyAttribute]',
+  standalone: true,
+  providers: []
+})
+export class MyAttributeDirective { }
+#+end_src
+
+** Pipe Standalone
+
+Analogamente, anche le pipe possono essere standalone e dichiarate all'interno della sezione ~imports~ del componente che le utilizza.
+
+#+begin_src typescript
+@Pipe({
+  name: 'myFilter',
+  standalone: true
+})
+export class MyFilterPipe implements PipeTransform {
+  transform(value: any, ...args: any[]): any {
+    // Logica della pipe
+    return value;
+  }
+}
+#+end_src
+
+** Vantaggi
+
+  - Eliminazione dei moduli NgModule: struttura più semplice e meno codice.
+  - Maggiore modularità: componenti, direttive e pipe più indipendenti e riutilizzabili.
+  - Migliore leggibilità e manutenibilità del codice.
+
+** Esempio di utilizzo
+
+In un componente standalone, puoi importare direttamente altri componenti, direttive o pipe standalone:
+
+#+begin_src typescript
+import { MyAppComponent } from './my-app.component';
+import { MyAttributeDirective } from './my-attribute.directive';
+import { MyFilterPipe } from './my-filter.pipe';
+
+@Component({
+  // ...
+  standalone: true,
+  imports: [MyAppComponent, MyAttributeDirective, MyFilterPipe]
+})
+export class MyParentComponent { }
+#+end_src
+
+** Componenti, direttive e pipe standalone: una distinzione importante
+
+Come abbiamo visto, i componenti standalone offrono un approccio più snello e modulare allo sviluppo in Angular, eliminando la necessità di dichiararli all'interno di un modulo NgModule. Tuttavia, è fondamentale fare una distinzione tra componenti, direttive e pipe standalone:
+
+- **Componenti standalone**: *devono* dichiarare le proprie dipendenze (componenti, direttive e pipe) tramite la proprietà ~imports~ del decoratore ~@Component~. Questo è necessario perché il componente standalone deve sapere quali altri elementi può utilizzare nel suo template e nella sua logica.
+
+- **Direttive e pipe standalone**: *non* necessitano di importare la proprietà ~imports~. Questo perché direttive e pipe, per loro natura, non hanno dipendenze da altri componenti, direttive o pipe. Sono elementi "autonomi" che vengono utilizzati *dai* componenti, ma non ne "importano" altri.
+
+*** Perché questa differenza?
+
+La differenza fondamentale risiede nel ruolo che componenti, direttive e pipe svolgono all'interno dell'applicazione:
+
+- **Componenti**: sono i "mattoni" fondamentali dell'interfaccia utente. Possono contenere altri componenti, utilizzare direttive e pipe, e hanno una logica propria. Per questo motivo, hanno bisogno di "sapere" quali sono le loro dipendenze, e lo fanno tramite ~imports~.
+
+- **Direttive**: sono "*istruzioni*" che modificano il comportamento o l'aspetto degli elementi del DOM. Non "contengono" altri elementi, ma vengono "utilizzate" da essi. Per questo motivo, non hanno bisogno di importare nulla.
+
+- **Pipe**: trasformano i dati in un formato specifico. Anche loro sono "autonome" e non dipendono da altri elementi.
+
+** Retrocompatibilità
+
+Per iniziare a convertire dei componenti contenuti in un modulo in *standalone components* è possibile utilizzare questo approccio conservativo per mantenere la retrocompatibilità:
+
+#+begin_src typescript
+import { MyStandaloneAppComponent } from './my-app.component';
+import { MyStandaloneAttributeDirective } from './my-attribute.directive';
+import { MyFilterPipe } from './my-filter.pipe';
+
+@NgModule({
+  declarations: [MyFilterPipe],
+  imports: [
+    MyStandaloneAppComponent,
+    MyStandaloneAttributeDirective,
+  ],
+  exports: [MyStandaloneAppComponent, MyStandaloneAttributeDirective]
+})
+export class MyOldModule { }
+#+end_src
+
+#+BEGIN_COMMENT
+** Directive composition API
+** Lazy-loading components
+** viewProvider
+** DOM APIs
+*** afterRender & afterNextRender
+*** DestroyRef
+
+* Signal
+* Extra
+#+END_COMMENT
