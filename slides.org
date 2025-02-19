@@ -200,6 +200,52 @@ import { MyFilterPipe } from './my-filter.pipe';
 export class MyOldModule { /* ... */ }
 #+end_src
 
+** Componenti Standalone: addio NgModule?
+
+Con l'avvento dei componenti standalone, i moduli NgModule diventano opzionali. Questo non significa che siano completamente inutili, ma il loro ruolo cambia.
+
+I moduli possono ancora essere utili per:
+  - Organizzare il codice in unità logiche più grandi.
+  - Raggruppare componenti, direttive e pipe che vengono spesso utilizzati insieme.
+  - Fornire configurazioni a livello di modulo (ad esempio, provider di servizi).
+
+Tuttavia, per molte applicazioni, i componenti standalone offrono una soluzione più semplice e diretta, eliminando la necessità di creare moduli per ogni componente.
+
+*** forRoot e forChild: un nuovo approccio
+
+I metodi ~forRoot~ e ~forChild~ erano spesso utilizzati con i moduli per configurare servizi e condividere dati tra componenti in modo gerarchico.
+Con i componenti standalone, questo approccio cambia.
+
+**Configurazione di servizi essenziali (HttpClient e Routing):**
+
+- *HttpClient:* Per configurare ~HttpClient~, utilizza la funzione =provideHttpClient()= all'interno dell'array =providers= del metodo =bootstrapApplication()= (nel tuo file =main.ts=):
+  #+begin_src typescript
+  import { bootstrapApplication } from '@angular/platform-browser';
+  import { AppComponent } from './app/app.component';
+  import { provideHttpClient } from '@angular/common/http';
+
+  bootstrapApplication(AppComponent, {
+    providers: [
+      provideHttpClient(/* ... */)
+    ]
+  });
+  #+end_src
+
+- *Routing:* Per il routing, utilizza la funzione =provideRouter()= sempre all'interno dell'array =providers= di =bootstrapApplication()=:
+  #+begin_src typescript
+  import { bootstrapApplication } from '@angular/platform-browser';
+  import { AppComponent } from './app/app.component';
+  import { provideRouter } from '@angular/router';
+  import { routes } from './app.routes'; // Importa le tue rotte
+
+  bootstrapApplication(AppComponent, {
+    providers: [
+      provideRouter(routes, withComponentInputBinding(), /* ... */)
+    ]
+  });
+  #+end_src
+
+
 * Directive Composition API e hostDirectives in Angular
 
 - [[https://angular.dev/guide/directives/directive-composition-api][Guida ufficiale Angular]] ([[https://stackblitz.com/edit/stackblitz-starters-jrxkcahg][Playground]])
