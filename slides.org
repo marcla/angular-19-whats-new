@@ -166,19 +166,19 @@ export class MyParentComponent { /* ... */ }
 
 Come abbiamo visto, i componenti standalone offrono un approccio più snello e modulare allo sviluppo in Angular, eliminando la necessità di dichiararli all'interno di un modulo NgModule. Tuttavia, è fondamentale fare una distinzione tra componenti, direttive e pipe standalone:
 
-- **Componenti standalone**: *devono* dichiarare le proprie dipendenze (componenti, direttive e pipe) tramite la proprietà ~imports~ del decoratore ~@Component~. Questo è necessario perché il componente standalone deve sapere quali altri elementi può utilizzare nel suo template e nella sua logica.
+- *Componenti standalone*: *devono* dichiarare le proprie dipendenze (componenti, direttive e pipe) tramite la proprietà ~imports~ del decoratore ~@Component~. Questo è necessario perché il componente standalone deve sapere quali altri elementi può utilizzare nel suo template e nella sua logica.
 
-- **Direttive e pipe standalone**: *non* necessitano di importare la proprietà ~imports~. Questo perché direttive e pipe, per loro natura, non hanno dipendenze da altri componenti, direttive o pipe. Sono elementi "autonomi" che vengono utilizzati *dai* componenti, ma non ne "importano" altri.
+- *Direttive e pipe standalone*: *non* necessitano di importare la proprietà ~imports~. Questo perché direttive e pipe, per loro natura, non hanno dipendenze da altri componenti, direttive o pipe. Sono elementi "autonomi" che vengono utilizzati *dai* componenti, ma non ne "importano" altri.
 
 *** Perché questa differenza?
 
 La differenza fondamentale risiede nel ruolo che componenti, direttive e pipe svolgono all'interno dell'applicazione:
 
-- **Componenti**: sono i "mattoni" fondamentali dell'interfaccia utente. Possono contenere altri componenti, utilizzare direttive e pipe, e hanno una logica propria. Per questo motivo, hanno bisogno di "sapere" quali sono le loro dipendenze, e lo fanno tramite ~imports~.
+- *Componenti*: sono i "mattoni" fondamentali dell'interfaccia utente. Possono contenere altri componenti, utilizzare direttive e pipe, e hanno una logica propria. Per questo motivo, hanno bisogno di "sapere" quali sono le loro dipendenze, e lo fanno tramite ~imports~.
 
-- **Direttive**: sono "*istruzioni*" che modificano il comportamento o l'aspetto degli elementi del DOM. Non "contengono" altri elementi, ma vengono "utilizzate" da essi. Per questo motivo, non hanno bisogno di importare nulla.
+- *Direttive*: sono "*istruzioni*" che modificano il comportamento o l'aspetto degli elementi del DOM. Non "contengono" altri elementi, ma vengono "utilizzate" da essi. Per questo motivo, non hanno bisogno di importare nulla.
 
-- **Pipe**: trasformano i dati in un formato specifico. Anche loro sono "autonome" e non dipendono da altri elementi.
+- *Pipe*: trasformano i dati in un formato specifico. Anche loro sono "autonome" e non dipendono da altri elementi.
 
 ** Retrocompatibilità
 
@@ -216,7 +216,7 @@ Tuttavia, per molte applicazioni, i componenti standalone offrono una soluzione 
 I metodi ~forRoot~ e ~forChild~ erano spesso utilizzati con i moduli per configurare servizi e condividere dati tra componenti in modo gerarchico.
 Con i componenti standalone, questo approccio cambia.
 
-**Configurazione di servizi essenziali (HttpClient e Routing):**
+*Configurazione di servizi essenziali (HttpClient e Routing):*
 
 - *HttpClient:* Per configurare ~HttpClient~, utilizza la funzione =provideHttpClient()= all'interno dell'array =providers= del metodo =bootstrapApplication()= (nel tuo file =main.ts=):
   #+begin_src typescript
@@ -250,22 +250,22 @@ Con i componenti standalone, questo approccio cambia.
 
 - [[https://angular.dev/guide/directives/directive-composition-api][Guida ufficiale Angular]] ([[https://stackblitz.com/edit/stackblitz-starters-jrxkcahg][Playground]])
 
-A partire da Angular 16, è possibile comporre componenti e direttive in modo più modulare grazie alle **Directive Composition API**.
+A partire da Angular 16, è possibile comporre componenti e direttive in modo più modulare grazie alle *Directive Composition API*.
 
-L'uso principale di =hostDirectives= è **sulle direttive** per creare **comportamenti componibili e modulari**.
-Questa tecnica permette di **raggruppare più direttive in una sola**, mantenendo il codice più pulito e riutilizzabile.
+L'uso principale di =hostDirectives= è *sulle direttive* per creare *comportamenti componibili e modulari*.
+Questa tecnica permette di *raggruppare più direttive in una sola*, mantenendo il codice più pulito e riutilizzabile.
 
-L'elemento chiave di questa API è la proprietà =hostDirectives=, che consente di **aggregare direttive standalone** in un componente o in una direttiva (standalone) senza modificarne il template.
+L'elemento chiave di questa API è la proprietà =hostDirectives=, che consente di *aggregare direttive standalone* in un componente o in una direttiva (standalone) senza modificarne il template.
 
-**🔹 Vantaggi principali:**
-  - **Riutilizzo del codice** → le direttive possono essere condivise tra più componenti senza dichiararle nel template.
-  - **Separazione delle responsabilità** → ogni direttiva può gestire una specifica funzionalità senza mescolarsi con la logica del componente.
-  - **Mappatura di Input/Output** → consente di rinominare =@Input= e =@Output= delle direttive per adattarli al contesto del componente.
-  - **Leggibilità migliorata:** → il codice è più conciso e focalizzato sulla logica specifica della direttiva "ospitante".
+*🔹 Vantaggi principali:*
+  - *Riutilizzo del codice* → le direttive possono essere condivise tra più componenti senza dichiararle nel template.
+  - *Separazione delle responsabilità* → ogni direttiva può gestire una specifica funzionalità senza mescolarsi con la logica del componente.
+  - *Mappatura di Input/Output* → consente di rinominare =@Input= e =@Output= delle direttive per adattarli al contesto del componente.
+  - *Leggibilità migliorata:* → il codice è più conciso e focalizzato sulla logica specifica della direttiva "ospitante".
 
-**🔹 Quando usare hostDirectives?**
-- **Principalmente nelle direttive**, per creare comportamenti riutilizzabili senza ereditarietà complessa.
-- **Nei componenti solo se strettamente necessario**, quando si vuole includere automaticamente una direttiva senza dichiararla nel template.
+*🔹 Quando usare hostDirectives?*
+- *Principalmente nelle direttive*, per creare comportamenti riutilizzabili senza ereditarietà complessa.
+- *Nei componenti solo se strettamente necessario*, quando si vuole includere automaticamente una direttiva senza dichiararla nel template.
 
 #+BEGIN_SRC typescript
 /* ⇩ @Directive */
@@ -288,25 +288,25 @@ export class LoadingButtonComponent {}
 
 ** Differenza tra hostDirectives ed ereditarietà classica
 
-L'uso di =hostDirectives= **non** fa ereditare i metodi interni della direttiva aggiunta, **a differenza di `extends`** nell'ereditarietà classica.
+L'uso di =hostDirectives= *non* fa ereditare i metodi interni della direttiva aggiunta, *a differenza di `extends`* nell'ereditarietà classica.
 
-**📌 Differenza tra `hostDirectives` ed `extends`**
+*📌 Differenza tra `hostDirectives` ed `extends`*
 | Caratteristica               | `extends` (Ereditarietà classica) | `hostDirectives` |
 |------------------------------|----------------------------------|------------------|
-| **Eredita metodi e proprietà protette/private** | ✅ Sì | ❌ No |
-| **Eredita input/output** | ❌ No (deve essere ridefinito) | ✅ Sì (se esplicitamente mappato) |
-| **Eredita metodi pubblici** | ✅ Sì | ❌ No |
-| **Supporta più "estensioni"** | ❌ No (solo una classe base) | ✅ Sì (può aggregare più direttive) |
+| *Eredita metodi e proprietà protette/private* | ✅ Sì | ❌ No |
+| *Eredita input/output* | ❌ No (deve essere ridefinito) | ✅ Sì (se esplicitamente mappato) |
+| *Eredita metodi pubblici* | ✅ Sì | ❌ No |
+| *Supporta più "estensioni"* | ❌ No (solo una classe base) | ✅ Sì (può aggregare più direttive) |
 
 ---
 
 ** Cosa eredita hostDirectives?
 
-- ✔ **Solo ciò che è esplicitamente mappato negli `inputs` e `outputs`**
+- ✔ *Solo ciò che è esplicitamente mappato negli `inputs` e `outputs`*
 - ✔ Il comportamento della direttiva (influisce sullo stesso host element)
-- ✖ **Non eredita metodi o proprietà pubbliche della direttiva inclusa**
+- ✖ *Non eredita metodi o proprietà pubbliche della direttiva inclusa*
 
-💡 **Se hai bisogno di accedere a metodi della direttiva inclusa, devi ottenere manualmente un riferimento a essa.**
+💡 *Se hai bisogno di accedere a metodi della direttiva inclusa, devi ottenere manualmente un riferimento a essa.*
 
 ---
 
@@ -343,12 +343,12 @@ export class EnhancedDirective {
 }
 #+END_SRC
 
-🔴 **Errore:** il metodo =logMessage()= non viene ereditato da =BaseDirective=.
+🔴 *Errore:* il metodo =logMessage()= non viene ereditato da =BaseDirective=.
 
 ---
 
 ** Come accedere ai metodi di una direttiva inclusa?
-Devi **iniettare la direttiva inclusa** manualmente nel costruttore:
+Devi *iniettare la direttiva inclusa* manualmente nel costruttore:
 #+BEGIN_SRC typescript
 @Directive({
   selector: '[appEnhanced]',
@@ -368,15 +368,15 @@ export class EnhancedDirective {
 
 ---
 
-**📌 È obbligatorio specificare inputs e outputs?**
+*📌 È obbligatorio specificare inputs e outputs?*
 No, non è obbligatorio.
-Tuttavia, **se non vengono specificati, il componente o la direttiva che utilizza =hostDirectives= non erediterà automaticamente gli input/output della direttiva.**
+Tuttavia, *se non vengono specificati, il componente o la direttiva che utilizza =hostDirectives= non erediterà automaticamente gli input/output della direttiva.*
 
-**🔹 Cosa succede se non vengono dichiarati?**
-- Gli input e gli output della direttiva **non saranno accessibili** nel contesto in cui è usata.
-- Se il componente o la direttiva tenta di accedere a un input/output non mappato, **Angular non genererà errori**, ma semplicemente ignorerà tali proprietà.
+*🔹 Cosa succede se non vengono dichiarati?*
+- Gli input e gli output della direttiva *non saranno accessibili* nel contesto in cui è usata.
+- Se il componente o la direttiva tenta di accedere a un input/output non mappato, *Angular non genererà errori*, ma semplicemente ignorerà tali proprietà.
 
-✅ **Esempio senza mapping di inputs/outputs**
+✅ *Esempio senza mapping di inputs/outputs*
 #+BEGIN_SRC typescript
 @Directive({
   selector: '[appExample]',
@@ -385,23 +385,23 @@ Tuttavia, **se non vengono specificati, il componente o la direttiva che utilizz
 })
 export class ExampleDirective {}
 #+END_SRC
-👉 Qui, =appExample= utilizza =SomeDirective=, **ma non ha accesso ai suoi input/output** perché non sono stati mappati.
+👉 Qui, =appExample= utilizza =SomeDirective=, *ma non ha accesso ai suoi input/output* perché non sono stati mappati.
 
 ---
 
 ** Usare hostDirectives nei componenti
 
-**📌 Quando usare hostDirectives in un componente?**
-- Quando si vuole **aggregare direttive** senza doverle dichiarare nel template.
-- Quando si ha bisogno di **mappare gli input/output** di una direttiva in modo che siano gestiti direttamente dal componente.
-- Per favorire un'architettura basata sulla **composizione anziché l'ereditarietà**.
+*📌 Quando usare hostDirectives in un componente?*
+- Quando si vuole *aggregare direttive* senza doverle dichiarare nel template.
+- Quando si ha bisogno di *mappare gli input/output* di una direttiva in modo che siano gestiti direttamente dal componente.
+- Per favorire un'architettura basata sulla *composizione anziché l'ereditarietà*.
 
-**❌ Quando *NON* usare hostDirectives in un componente?**
-1. **Se la direttiva può essere dichiarata nel template con [myDirective]**
-   - Se l'unico motivo per usare =hostDirectives= è evitare di scrivere la direttiva nel template, allora probabilmente **non è necessario**.
+*❌ Quando *NON* usare hostDirectives in un componente?*
+1. *Se la direttiva può essere dichiarata nel template con [myDirective]*
+   - Se l'unico motivo per usare =hostDirectives= è evitare di scrivere la direttiva nel template, allora probabilmente *non è necessario*.
 
-2. **Se la direttiva modifica il DOM del componente**
-   - =hostDirectives= **non modifica il template**, ma solo i suoi host bindings.
+2. *Se la direttiva modifica il DOM del componente*
+   - =hostDirectives= *non modifica il template*, ma solo i suoi host bindings.
    - Se hai bisogno di cambiare il DOM, usa invece una direttiva strutturale (=*ngIf=, =*ngFor=).
 
 ---
@@ -410,20 +410,20 @@ export class ExampleDirective {}
 
 - [[https://angular.dev/guide/components/programmatic-rendering#lazy-loading-components][Guida ufficiale Angular]]
 
-A partire da Angular 17, è possibile **caricare dinamicamente i componenti in modo lazy** senza doverli dichiarare manualmente nei moduli o nei componenti host.
+A partire da Angular 17, è possibile *caricare dinamicamente i componenti in modo lazy* senza doverli dichiarare manualmente nei moduli o nei componenti host.
 
-**Perché usare il Lazy-Loading dei componenti?**
-✔ **Migliorare le performance** riducendo il bundle iniziale dell’app.
-✔ **Evitare dipendenze inutili** quando un componente non è sempre necessario.
-✔ **Caricare componenti solo quando servono**, ad esempio modali, tabelle avanzate o widget dinamici.
+*Perché usare il Lazy-Loading dei componenti?*
+✔ *Migliorare le performance* riducendo il bundle iniziale dell’app.
+✔ *Evitare dipendenze inutili* quando un componente non è sempre necessario.
+✔ *Caricare componenti solo quando servono*, ad esempio modali, tabelle avanzate o widget dinamici.
 
 Prima di Angular 17, per creare un componente dinamico si utilizzava =ViewContainerRef= e =ComponentFactoryResolver=, ma ora Angular fornisce un metodo più semplice ed efficiente.
 
 ** 🔹 Come caricare un componente in modo lazy
-Il metodo chiave è **`import()`**, che consente di caricare un componente solo quando richiesto.
+Il metodo chiave è *`import()`*, che consente di caricare un componente solo quando richiesto.
 
-**✅ Esempio base: caricamento dinamico di un componente**
-Supponiamo di avere un **componente pesante**, ad esempio una tabella avanzata, che vogliamo caricare solo quando serve.
+*✅ Esempio base: caricamento dinamico di un componente*
+Supponiamo di avere un *componente pesante*, ad esempio una tabella avanzata, che vogliamo caricare solo quando serve.
 
 Nel componente host, utilizziamo =ViewContainerRef= e il nuovo metodo =viewContainerRef.createComponent()=
 
@@ -462,9 +462,9 @@ export class DashboardComponent {
 #+END_SRC
 
 ** 🔹 Conclusione
-- **Lazy-loading dei componenti** → permette di caricare dinamicamente elementi solo quando servono.
-- **Angular 17+ semplifica il processo** → con `import()` e `createComponent()`.
-- **È possibile passare input dinamici** → ai componenti caricati in modo lazy.
+- *Lazy-loading dei componenti* → permette di caricare dinamicamente elementi solo quando servono.
+- *Angular 17+ semplifica il processo* → con `import()` e `createComponent()`.
+- *È possibile passare input dinamici* → ai componenti caricati in modo lazy.
 
 ---
 
