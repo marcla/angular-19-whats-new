@@ -251,23 +251,37 @@ Con i componenti standalone, questo approccio cambia.
 - [[https://angular.dev/guide/directives/directive-composition-api][Guida ufficiale Angular]] ([[https://stackblitz.com/edit/stackblitz-starters-jrxkcahg][Playground]])
 
 A partire da Angular 16, è possibile comporre componenti e direttive in modo più modulare grazie alle **Directive Composition API**.
-L'elemento chiave di questa API è la proprietà =hostDirectives=, che consente di **aggregare direttive standalone** in un componente senza modificarne il template.
+
+L'uso principale di =hostDirectives= è **sulle direttive** per creare **comportamenti componibili e modulari**.
+Questa tecnica permette di **raggruppare più direttive in una sola**, mantenendo il codice più pulito e riutilizzabile.
+
+L'elemento chiave di questa API è la proprietà =hostDirectives=, che consente di **aggregare direttive standalone** in un componente o in una direttiva (standalone) senza modificarne il template.
 
 **🔹 Vantaggi principali:**
-- **Riutilizzo del codice** → le direttive possono essere condivise tra più componenti senza dichiararle nel template.
-- **Separazione delle responsabilità** → ogni direttiva può gestire una specifica funzionalità senza mescolarsi con la logica del componente.
-- **Mappatura di Input/Output** → consente di rinominare =@Input= e =@Output= delle direttive per adattarli al contesto del componente.
+  - **Riutilizzo del codice** → le direttive possono essere condivise tra più componenti senza dichiararle nel template.
+  - **Separazione delle responsabilità** → ogni direttiva può gestire una specifica funzionalità senza mescolarsi con la logica del componente.
+  - **Mappatura di Input/Output** → consente di rinominare =@Input= e =@Output= delle direttive per adattarli al contesto del componente.
+  - **Leggibilità migliorata:** → il codice è più conciso e focalizzato sulla logica specifica della direttiva "ospitante".
 
 **🔹 Quando usare hostDirectives?**
 - **Principalmente nelle direttive**, per creare comportamenti riutilizzabili senza ereditarietà complessa.
 - **Nei componenti solo se strettamente necessario**, quando si vuole includere automaticamente una direttiva senza dichiararla nel template.
 
 #+BEGIN_SRC typescript
+/* ⇩ @Directive */
+@Directive({
+  selector: '[appAdvancedTooltip]',
+  standalone: true,
+  hostDirectives: [{ directive: TooltipDirective, inputs: ['message'], outputs: ['onShow'] }]
+})
+export class AdvancedTooltipDirective {}
+
+/* ⇩ @Component */
 @Component({
   selector: 'app-loading-button',
   standalone: true,
   template: `<button>Carica</button>`,
-  hostDirectives: [{ directive: MyDirective, inputs: ['someInput'], outputs: ['someOutput'] }]
+  hostDirectives: [{ directive: PositionDirective, inputs: ['someInput'], outputs: ['someOutput'] }]
 })
 export class LoadingButtonComponent {}
 #+END_SRC
@@ -306,17 +320,22 @@ export class BaseDirective {
   @Input() value = 'Base Value';
 
   logMessage() {
-    console.log('Metodo interno della direttiva');
+    console.log(`Metodo interno della direttiva che stampa ${this.value}`);
   }
 }
 
 @Directive({
   selector: '[appEnhanced]',
   standalone: true,
-  hostDirectives: [{ directive: BaseDirective, inputs: ['value'] }]
+  hostDirectives: [
+    {
+      directive: BaseDirective,
+      inputs: ['value'] // ← Necessario specificare le inputs se se ne vuole fare uso
+    }
+  ]
 })
 export class EnhancedDirective {
-  constructor() {}
+  constructor() {} // ← Non è necessario super() nel costruttore
 
   ngOnInit() {
     this.logMessage(); // ❌ Errore: logMessage() non è disponibile!
@@ -370,42 +389,12 @@ export class ExampleDirective {}
 
 ---
 
-*** 📌 hostDirectives
-
-L'uso principale di =hostDirectives= è **sulle direttive** per creare **comportamenti componibili e modulari**.
-Questa tecnica permette di **raggruppare più direttive in una sola**, mantenendo il codice più pulito e riutilizzabile.
-
-✅ **Esempio: composizione di direttive**
-#+BEGIN_SRC typescript
-@Directive({
-  selector: '[appAdvancedTooltip]',
-  standalone: true,
-  hostDirectives: [{ directive: TooltipDirective, inputs: ['message'], outputs: ['onShow'] }]
-})
-export class AdvancedTooltipDirective {}
-#+END_SRC
-👉 Qui, la direttiva =appAdvancedTooltip= **integra automaticamente** il comportamento di =TooltipDirective=, evitando di doverla dichiarare esplicitamente nel template.
-
-
-#+BEGIN_COMMENT
+*** hostDirectives nei componenti
 
 **📌 Quando usare hostDirectives in un componente?**
 - Quando si vuole **aggregare direttive** senza doverle dichiarare nel template.
 - Quando si ha bisogno di **mappare gli input/output** di una direttiva in modo che siano gestiti direttamente dal componente.
 - Per favorire un'architettura basata sulla **composizione anziché l'ereditarietà**.
-
-**✅ Esempio corretto di utilizzo:**
-#+BEGIN_SRC typescript
-@Component({
-  selector: 'app-loading-button',
-  standalone: true,
-  template: `<button>Carica</button>`,
-  hostDirectives: [{ directive: MyDirective, inputs: ['someInput'], outputs: ['someOutput'] }]
-})
-export class LoadingButtonComponent {}
-#+END_SRC
-
----
 
 **❌ Quando *NON* usare hostDirectives in un componente?**
 1. **Se la direttiva può essere dichiarata nel template con [myDirective]**
@@ -417,111 +406,6 @@ export class LoadingButtonComponent {}
 
 ---
 
-
-**📌 È obbligatorio specificare inputs e outputs in hostDirectives?**
-No, non è obbligatorio.
-Se non vengono specificati, il componente **non eredita automaticamente gli input e gli output della direttiva**.
-
-**🔹 Cosa succede se non vengono dichiarati?**
-- Gli input e gli output della direttiva **non saranno accessibili nel componente**.
-- Se il componente tenta di accedere a un input/output che non è stato mappato, Angular non genererà errori, ma semplicemente non lo considererà.
-
-**✅ Esempio senza mapping di inputs/outputs**
-#+BEGIN_SRC typescript
-@Component({
-  selector: 'app-example',
-  standalone: true,
-  template: `<p>Componente senza input mappati</p>`,
-  hostDirectives: [{ directive: SomeDirective }]
-})
-export class ExampleComponent {}
-#+END_SRC
-👉 In questo caso, **il componente userà la direttiva**, ma non avrà accesso ai suoi input/output.
-
----
-
-**📌 Conclusione**
-- =hostDirectives= è uno strumento potente per **comporre comportamenti senza modificare il template del componente**.
-- Se gli input/output non sono mappati, il componente non potrà utilizzarli.
-- Se la direttiva è già dichiarata nel template, =hostDirectives= potrebbe non essere necessario.
-- Non può **modificare il DOM del componente**, ma solo i suoi binding.
-
-💡 **Utilizzalo quando serve maggiore modularità e componibilità nel codice Angular!** 🚀
-#+END_COMMENT
-
-#+BEGIN_COMMENT
- **~hostDirectives~: un ponte tra direttive**
-
-  - Immagina di avere una direttiva ~appCustomStyle~ che applica stili personalizzati a un elemento, e una direttiva ~appTooltip~ che aggiunge un tooltip.
-  - Con ~hostDirectives~, puoi creare una nuova direttiva ~appStyledTooltip~ che "combina" le funzionalità di ~appCustomStyle~ e ~appTooltip~ semplicemente "ospitandole" al suo interno.
-  - In questo modo, ~appStyledTooltip~ erediterà automaticamente gli stili personalizzati di ~appCustomStyle~ e il tooltip di ~appTooltip~, senza doverne riscrivere il codice.
-
-  #+begin_src typescript
-  @Directive({
-    selector: '[appCustomStyle]',
-    standalone: true,
-    inputs: ['customStyleInput'], // Input di esempio
-    outputs: ['customStyleOutput'] // Output di esempio
-  })
-  export class CustomStyleDirective {
-    @Input() customStyleInput: any;
-    @Output() customStyleOutput = new EventEmitter<any>();
-    // Logica per applicare stili personalizzati
-  }
-
-  @Directive({
-    selector: '[appTooltip]',
-    standalone: true,
-    inputs: ['tooltipText'], // Input di esempio
-    outputs: ['tooltipShown'] // Output di esempio
-  })
-  export class TooltipDirective {
-    @Input() tooltipText: string;
-    @Output() tooltipShown = new EventEmitter<boolean>();
-    // Logica per aggiungere un tooltip
-  }
-
-  @Directive({
-    selector: '[appStyledTooltip]',
-    standalone: true,
-    hostDirectives: [
-      {
-        directive: CustomStyleDirective,
-        inputs: ['customStyleInput'], // Mappa l'input di CustomStyleDirective
-        outputs: ['customStyleOutput'] // Mappa l'output di CustomStyleDirective
-      },
-      {
-        directive: TooltipDirective,
-        // tooltipText non viene mappato, quindi usa il valore di default
-        outputs: ['tooltipShown'] // Mappa l'output di TooltipDirective
-      }
-    ]
-  })
-  export class StyledTooltipDirective {
-    // Logica specifica per la direttiva combinata
-  }
-  #+end_src
-
-**Input e output opzionali**
-
-  - Come mostrato nell'esempio, è possibile omettere la mappatura di alcuni input o output nella definizione di ~hostDirectives~.
-  - Se un input non viene mappato, la direttiva "ospitata" utilizzerà il suo valore di default.
-  - Se un output non viene mappato, l'evento corrispondente non sarà accessibile dalla direttiva "ospitante".
-  - Questa flessibilità permette di personalizzare il comportamento delle direttive "ospitate" in base alle esigenze specifiche della direttiva "ospitante".
-
-**Vantaggi di ~hostDirectives~:**
-
-  - **Riuso di codice potenziato:** Riutilizza intere direttive senza doverne copiare e incollare il codice.
-  - **Modularità estrema:** Crea direttive "combinate" a partire da direttive più piccole e specializzate.
-  - **Manutenibilità semplificata:** Modifiche a una direttiva "ospitata" si riflettono automaticamente in tutte le direttive che la utilizzano.
-  - **Leggibilità migliorata:** Il codice è più conciso e focalizzato sulla logica specifica della direttiva "ospitante".
-
-**Considerazioni importanti:**
-
-  - Le direttive utilizzate in ~hostDirectives~ devono essere standalone.
-  - È possibile mappare gli input e gli output delle direttive "ospitate" per personalizzarne il comportamento all'interno della direttiva "ospitante".
-
-#+END_COMMENT
 
 #+BEGIN_COMMENT
 ** Lazy-loading components
