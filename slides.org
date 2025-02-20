@@ -300,7 +300,7 @@ L'uso di =hostDirectives= **non** fa ereditare i metodi interni della direttiva 
 
 ---
 
-*** Cosa eredita hostDirectives?
+** Cosa eredita hostDirectives?
 
 - ✔ **Solo ciò che è esplicitamente mappato negli `inputs` e `outputs`**
 - ✔ Il comportamento della direttiva (influisce sullo stesso host element)
@@ -310,7 +310,7 @@ L'uso di =hostDirectives= **non** fa ereditare i metodi interni della direttiva 
 
 ---
 
-*** 📌 Esempio: cosa NON viene ereditato
+** Esempio: cosa NON viene ereditato
 #+BEGIN_SRC typescript
 @Directive({
   selector: '[appBase]',
@@ -347,7 +347,7 @@ export class EnhancedDirective {
 
 ---
 
-*** 📌 Come accedere ai metodi di una direttiva inclusa?
+** Come accedere ai metodi di una direttiva inclusa?
 Devi **iniettare la direttiva inclusa** manualmente nel costruttore:
 #+BEGIN_SRC typescript
 @Directive({
@@ -389,7 +389,7 @@ export class ExampleDirective {}
 
 ---
 
-*** hostDirectives nei componenti
+** Usare hostDirectives nei componenti
 
 **📌 Quando usare hostDirectives in un componente?**
 - Quando si vuole **aggregare direttive** senza doverle dichiarare nel template.
@@ -406,9 +406,71 @@ export class ExampleDirective {}
 
 ---
 
+* Lazy-loading Components
+
+- [[https://angular.dev/guide/components/programmatic-rendering#lazy-loading-components][Guida ufficiale Angular]]
+
+A partire da Angular 17, è possibile **caricare dinamicamente i componenti in modo lazy** senza doverli dichiarare manualmente nei moduli o nei componenti host.
+
+**Perché usare il Lazy-Loading dei componenti?**
+✔ **Migliorare le performance** riducendo il bundle iniziale dell’app.
+✔ **Evitare dipendenze inutili** quando un componente non è sempre necessario.
+✔ **Caricare componenti solo quando servono**, ad esempio modali, tabelle avanzate o widget dinamici.
+
+Prima di Angular 17, per creare un componente dinamico si utilizzava =ViewContainerRef= e =ComponentFactoryResolver=, ma ora Angular fornisce un metodo più semplice ed efficiente.
+
+** 🔹 Come caricare un componente in modo lazy
+Il metodo chiave è **`import()`**, che consente di caricare un componente solo quando richiesto.
+
+**✅ Esempio base: caricamento dinamico di un componente**
+Supponiamo di avere un **componente pesante**, ad esempio una tabella avanzata, che vogliamo caricare solo quando serve.
+
+Nel componente host, utilizziamo =ViewContainerRef= e il nuovo metodo =viewContainerRef.createComponent()=
+
+#+BEGIN_SRC typescript
+/* ⇩ Il componente che verrà caricato lazy */
+@Component({
+  selector: 'app-lazy-table',
+  standalone: true,
+  template: `<h2>Tabella Lazy</h2>`
+})
+export class LazyTableComponent {
+  @Input() data!: string;
+}
+
+/* ⇩ Il componente host */
+@Component({
+  selector: 'app-dashboard',
+  standalone: true,
+  template: `
+    <button (click)="loadTable()">Carica Tabella</button>
+    <ng-container #container></ng-container>
+  `
+})
+export class DashboardComponent {
+  @ViewChild('container', { read: ViewContainerRef }) container!: ViewContainerRef;
+
+  async loadTable() {
+    this.container.clear();
+
+    const { LazyTableComponent } = await import('./lazy-table.component'); // ← Qui viene importato il componente
+    const componentRef = this.container.createComponent(LazyTableComponent); // ← Qui viene creato il componente
+
+    componentRef.setInput('data', 'Dati caricati dinamicamente!'); // ← Qui riceve i valori dell'input
+  }
+}
+#+END_SRC
+
+** 🔹 Conclusione
+- **Lazy-loading dei componenti** → permette di caricare dinamicamente elementi solo quando servono.
+- **Angular 17+ semplifica il processo** → con `import()` e `createComponent()`.
+- **È possibile passare input dinamici** → ai componenti caricati in modo lazy.
+
+---
+
+
 
 #+BEGIN_COMMENT
-** Lazy-loading components
 ** viewProvider
 ** DOM APIs
 *** afterRender & afterNextRender
