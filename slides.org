@@ -2,6 +2,8 @@
 #+AUTHOR:   Claudio Marchiori
 #+LANGUAGE: it
 
+-----
+
 * Componenti Standalone
 
 In Angular 16 è stata introdotta una nuova tipologia di componenti, le *standalone components*, che offrono un modo più semplice e modulare di sviluppare le applicazioni.
@@ -245,6 +247,7 @@ Con i componenti standalone, questo approccio cambia.
   });
   #+end_src
 
+-----
 
 * Directive Composition API e hostDirectives in Angular
 
@@ -298,8 +301,6 @@ L'uso di =hostDirectives= *non* fa ereditare i metodi interni della direttiva ag
 | *Eredita metodi pubblici* | ✅ Sì | ❌ No |
 | *Supporta più "estensioni"* | ❌ No (solo una classe base) | ✅ Sì (può aggregare più direttive) |
 
------
-
 ** Cosa eredita hostDirectives?
 
 - ✔ *Solo ciò che è esplicitamente mappato negli `inputs` e `outputs`*
@@ -307,8 +308,6 @@ L'uso di =hostDirectives= *non* fa ereditare i metodi interni della direttiva ag
 - ✖ *Non eredita metodi o proprietà pubbliche della direttiva inclusa*
 
 💡 *Se hai bisogno di accedere a metodi della direttiva inclusa, devi ottenere manualmente un riferimento a essa.*
-
------
 
 ** Esempio: cosa NON viene ereditato
 #+BEGIN_SRC typescript
@@ -345,8 +344,6 @@ export class EnhancedDirective {
 
 🔴 *Errore:* il metodo =logMessage()= non viene ereditato da =BaseDirective=.
 
------
-
 ** Come accedere ai metodi di una direttiva inclusa?
 Devi *iniettare la direttiva inclusa* manualmente nel costruttore:
 #+BEGIN_SRC typescript
@@ -366,8 +363,6 @@ export class EnhancedDirective {
 
 👉 Ora =logMessage()= è accessibile perché otteniamo un riferimento esplicito a =BaseDirective=.
 
------
-
 *📌 È obbligatorio specificare inputs e outputs?*
 No, non è obbligatorio.
 Tuttavia, *se non vengono specificati, il componente o la direttiva che utilizza =hostDirectives= non erediterà automaticamente gli input/output della direttiva.*
@@ -386,8 +381,6 @@ Tuttavia, *se non vengono specificati, il componente o la direttiva che utilizza
 export class ExampleDirective {}
 #+END_SRC
 👉 Qui, =appExample= utilizza =SomeDirective=, *ma non ha accesso ai suoi input/output* perché non sono stati mappati.
-
------
 
 ** Usare hostDirectives nei componenti
 
