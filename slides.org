@@ -268,7 +268,7 @@ L'elemento chiave di questa API è la proprietà =hostDirectives=, che consente 
 - *Nei componenti solo se strettamente necessario*, quando si vuole includere automaticamente una direttiva senza dichiararla nel template.
 
 #+BEGIN_SRC typescript
-/* ⇩ @Directive */
+/* ↓ @Directive */
 @Directive({
   selector: '[appAdvancedTooltip]',
   standalone: true,
@@ -276,7 +276,7 @@ L'elemento chiave di questa API è la proprietà =hostDirectives=, che consente 
 })
 export class AdvancedTooltipDirective {}
 
-/* ⇩ @Component */
+/* ↓ @Component */
 @Component({
   selector: 'app-loading-button',
   standalone: true,
@@ -428,7 +428,7 @@ Supponiamo di avere un *componente pesante*, ad esempio una tabella avanzata, ch
 Nel componente host, utilizziamo =ViewContainerRef= e il nuovo metodo =viewContainerRef.createComponent()=
 
 #+BEGIN_SRC typescript
-/* ⇩ Il componente che verrà caricato lazy */
+/* ↓ Il componente che verrà caricato lazy */
 @Component({
   selector: 'app-lazy-table',
   standalone: true,
@@ -438,7 +438,7 @@ export class LazyTableComponent {
   @Input() data!: string;
 }
 
-/* ⇩ Il componente host */
+/* ↓ Il componente host */
 @Component({
   selector: 'app-dashboard',
   standalone: true,
