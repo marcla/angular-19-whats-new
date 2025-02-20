@@ -413,14 +413,14 @@ export class ExampleDirective {}
 A partire da Angular 17, è possibile *caricare dinamicamente i componenti in modo lazy* senza doverli dichiarare manualmente nei moduli o nei componenti host.
 
 *Perché usare il Lazy-Loading dei componenti?*
-✔ *Migliorare le performance* riducendo il bundle iniziale dell’app.
-✔ *Evitare dipendenze inutili* quando un componente non è sempre necessario.
-✔ *Caricare componenti solo quando servono*, ad esempio modali, tabelle avanzate o widget dinamici.
+- ✔ *Migliorare le performance* riducendo il bundle iniziale dell’app.
+- ✔ *Evitare dipendenze inutili* quando un componente non è sempre necessario.
+- ✔ *Caricare componenti solo quando servono*, ad esempio modali, tabelle avanzate o widget dinamici.
 
 Prima di Angular 17, per creare un componente dinamico si utilizzava =ViewContainerRef= e =ComponentFactoryResolver=, ma ora Angular fornisce un metodo più semplice ed efficiente.
 
 ** 🔹 Come caricare un componente in modo lazy
-Il metodo chiave è *`import()`*, che consente di caricare un componente solo quando richiesto.
+Il metodo chiave è =import()=, che consente di caricare un componente solo quando richiesto.
 
 *✅ Esempio base: caricamento dinamico di un componente*
 Supponiamo di avere un *componente pesante*, ad esempio una tabella avanzata, che vogliamo caricare solo quando serve.
@@ -463,7 +463,7 @@ export class DashboardComponent {
 
 ** 🔹 Conclusione
 - *Lazy-loading dei componenti* → permette di caricare dinamicamente elementi solo quando servono.
-- *Angular 17+ semplifica il processo* → con `import()` e `createComponent()`.
+- *Angular 17+ semplifica il processo* → con =import()= e =createComponent()=.
 - *È possibile passare input dinamici* → ai componenti caricati in modo lazy.
 
 ---
