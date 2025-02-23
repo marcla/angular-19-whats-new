@@ -218,7 +218,7 @@ Con i componenti standalone, questo approccio cambia.
 
 *Configurazione di servizi essenziali (HttpClient e Routing):*
 
-- *HttpClient:* Per configurare ~HttpClient~, utilizza la funzione =provideHttpClient()= all'interno dell'array =providers= del metodo =bootstrapApplication()= (nel tuo file =main.ts=):
+- *HttpClient:* Per configurare ~HttpClient~, utilizza la funzione ~provideHttpClient()~ all'interno dell'array ~providers~ del metodo ~bootstrapApplication()~ (nel tuo file ~main.ts~):
   #+begin_src typescript
   import { bootstrapApplication } from '@angular/platform-browser';
   import { AppComponent } from './app/app.component';
@@ -231,7 +231,7 @@ Con i componenti standalone, questo approccio cambia.
   });
   #+end_src
 
-- *Routing:* Per il routing, utilizza la funzione =provideRouter()= sempre all'interno dell'array =providers= di =bootstrapApplication()=:
+- *Routing:* Per il routing, utilizza la funzione ~provideRouter()~ sempre all'interno dell'array ~providers~ di ~bootstrapApplication()~:
   #+begin_src typescript
   import { bootstrapApplication } from '@angular/platform-browser';
   import { AppComponent } from './app/app.component';
@@ -253,15 +253,15 @@ Con i componenti standalone, questo approccio cambia.
 
 A partire da Angular 16, è possibile comporre componenti e direttive in modo più modulare grazie alle *Directive Composition API*.
 
-L'uso principale di =hostDirectives= è *sulle direttive* per creare *comportamenti componibili e modulari*.
+L'uso principale di ~hostDirectives~ è *sulle direttive* per creare *comportamenti componibili e modulari*.
 Questa tecnica permette di *raggruppare più direttive in una sola*, mantenendo il codice più pulito e riutilizzabile.
 
-L'elemento chiave di questa API è la proprietà =hostDirectives=, che consente di *aggregare direttive standalone* in un componente o in una direttiva (standalone) senza modificarne il template.
+L'elemento chiave di questa API è la proprietà ~hostDirectives~, che consente di *aggregare direttive standalone* in un componente o in una direttiva (standalone) senza modificarne il template.
 
 *🔹 Vantaggi principali:*
   - *Riutilizzo del codice* → le direttive possono essere condivise tra più componenti senza dichiararle nel template.
   - *Separazione delle responsabilità* → ogni direttiva può gestire una specifica funzionalità senza mescolarsi con la logica del componente.
-  - *Mappatura di Input/Output* → consente di rinominare =@Input= e =@Output= delle direttive per adattarli al contesto del componente.
+  - *Mappatura di Input/Output* → consente di rinominare ~@Input~ e ~@Output~ delle direttive per adattarli al contesto del componente.
   - *Leggibilità migliorata:* → il codice è più conciso e focalizzato sulla logica specifica della direttiva "ospitante".
 
 *🔹 Quando usare hostDirectives?*
@@ -289,7 +289,7 @@ export class LoadingButtonComponent {}
 
 ** Differenza tra hostDirectives ed ereditarietà classica
 
-L'uso di =hostDirectives= *non* fa ereditare i metodi interni della direttiva aggiunta, *a differenza di `extends`* nell'ereditarietà classica.
+L'uso di ~hostDirectives~ *non* fa ereditare i metodi interni della direttiva aggiunta, *a differenza di `extends`* nell'ereditarietà classica.
 
 *📌 Differenza tra `hostDirectives` ed `extends`*
 | Caratteristica               | `extends` (Ereditarietà classica) | `hostDirectives` |
@@ -340,7 +340,7 @@ export class EnhancedDirective {
 }
 #+END_SRC
 
-🔴 *Errore:* il metodo =logMessage()= non viene ereditato da =BaseDirective=.
+🔴 *Errore:* il metodo ~logMessage()~ non viene ereditato da ~BaseDirective~.
 
 ** Come accedere ai metodi di una direttiva inclusa?
 Devi *iniettare la direttiva inclusa* manualmente nel costruttore:
@@ -359,7 +359,7 @@ export class EnhancedDirective {
 }
 #+END_SRC
 
-👉 Ora =logMessage()= è accessibile perché otteniamo un riferimento esplicito a =BaseDirective=.
+👉 Ora ~logMessage()~ è accessibile perché otteniamo un riferimento esplicito a ~BaseDirective~.
 
 *📌 È obbligatorio specificare inputs e outputs?*
 No, non è obbligatorio.
@@ -378,7 +378,7 @@ Tuttavia, *se non vengono specificati, il componente o la direttiva che utilizza
 })
 export class ExampleDirective {}
 #+END_SRC
-👉 Qui, =appExample= utilizza =SomeDirective=, *ma non ha accesso ai suoi input/output* perché non sono stati mappati.
+👉 Qui, ~appExample~ utilizza ~SomeDirective~, *ma non ha accesso ai suoi input/output* perché non sono stati mappati.
 
 ** Usare hostDirectives nei componenti
 
@@ -452,119 +452,180 @@ export class DashboardComponent {
 }
 #+END_SRC
 
-** 🔹 Conclusione
+** Conclusione
 - *Lazy-loading dei componenti* → permette di caricare dinamicamente elementi solo quando servono.
 - *Angular 17+ semplifica il processo* → con =import()= e =createComponent()=.
 - *È possibile passare input dinamici* → ai componenti caricati in modo lazy.
 
 -----
 
-* Nuovi Lifecycle Hooks in Angular: afterRender, afterNextRender e DestroyRef
+* Nuove Lifecycle Hooks in Angular: afterRender, afterNextRender e DestroyRef
 
-Con Angular 16+, il framework ha introdotto nuovi lifecycle hooks per gestire meglio il rendering e la distruzione dei componenti.
-Questi sono particolarmente utili nei **Standalone Components** e semplificano la gestione degli effetti collaterali post-rendering.
+Con l’introduzione delle nuove versioni di Angular, sono stati aggiunti nuovi lifecycle hooks che migliorano la gestione del rendering e della distruzione dei componenti. In particolare:
 
-** afterRender e afterNextRender
+- *afterRender*: viene eseguito *dopo che il template è stato renderizzato e la change detection è completata*.
+- *afterNextRender*: viene eseguito *solo una volta dopo il primo rendering del template*.
+- *DestroyRef*: una nuova API che semplifica la gestione della pulizia delle risorse senza dover implementare ~OnDestroy~.
 
-*=afterRender()=* e *=afterNextRender()=* sono due nuovi lifecycle hooks che permettono di eseguire codice dopo il rendering del componente.
+*Differenza tra afterRender e afterNextRender*
 
-- *=afterRender()=*: Viene eseguito *dopo ogni change detection* se il componente è stato aggiornato.
-- *=afterNextRender()=*: Viene eseguito *solo una volta dopo il primo rendering* e non ad ogni aggiornamento.
+*Definizione chiara*:
 
-** Esempio di afterRender()
+- *afterRender* viene chiamato *dopo ogni rendering del template*, quindi può essere eseguito più volte durante il ciclo di vita del componente, ogni volta che Angular aggiorna il DOM in seguito a un cambiamento dello stato.
+- *afterNextRender* viene chiamato *solo una volta, dopo il primo rendering del template*, e non si ripete più per l’intero ciclo di vita del componente.
+
+*Esempio pratico di afterRender e afterNextRender*:
 
 #+BEGIN_SRC typescript
-import { Component, afterRender } from '@angular/core';
+import { Component, effect, afterRender, afterNextRender, Signal, signal } from '@angular/core';
 
 @Component({
-  selector: 'app-example',
-  standalone: true,
-  template: `<p>Example Component</p>`
+  selector: 'app-demo',
+  template: `<p>Contatore: {{ count() }}</p>
+             <button (click)="increment()">Incrementa</button>`
 })
-export class ExampleComponent {
+export class DemoComponent {
+  count: Signal<number> = signal(0);
+
   constructor() {
     afterRender(() => {
-      console.log('Eseguito dopo ogni change detection');
+      console.log('afterRender: Il template è stato aggiornato!');
     });
+
+    afterNextRender(() => {
+      console.log('afterNextRender: Questo viene eseguito solo dopo il primo rendering.');
+    });
+  }
+
+  increment() {
+    this.count.set(this.count() + 1);
   }
 }
 #+END_SRC
 
-📌 In questo esempio, la callback dentro =afterRender()= verrà eseguita dopo ogni change detection.
+** Confronto con i Lifecycle Hooks tradizionali
 
-** Esempio di afterNextRender()
+*Differenze con i precedenti lifecycle hooks*:
 
-Se vogliamo eseguire codice *solo dopo il primo render*, usiamo =afterNextRender()=:
+| Hook                        | Quando viene eseguito                                                   | Esegue il codice più volte? |
+|-----------------------------|------------------------------------------------------------------------|-----------------------------|
+| *ngOnInit*                  | Dopo la creazione del componente, prima del primo rendering           | No                          |
+| *ngOnChanges*               | Ad ogni modifica degli input bindings                                 | Sì                          |
+| *ngAfterContentInit*        | Dopo che il contenuto proiettato (ng-content) è stato inizializzato   | No                          |
+| *ngAfterContentChecked*     | Dopo ogni change detection sul contenuto proiettato                   | Sì                          |
+| *ngAfterViewInit*           | Dopo che la view e i figli sono stati inizializzati                   | No                          |
+| *ngAfterViewChecked*        | Dopo ogni change detection della view                                | Sì                          |
+| *afterRender*               | Dopo ogni aggiornamento del template e della change detection         | Sì                          |
+| *afterNextRender*           | Solo una volta, dopo il primo rendering del template                 | No                          |
+
+*Esempi di differenze*:
+
+- *ngAfterViewInit* è utile quando bisogna eseguire codice dopo che la view è stata inizializzata, ma viene chiamato solo una volta.
+- *afterRender* può essere utile per operazioni che devono avvenire *dopo ogni aggiornamento del DOM*, ad esempio per sincronizzare dati o interagire con librerie esterne.
+- *ngAfterViewChecked* si attiva ad ogni change detection, ma può essere inefficiente se non gestito correttamente.
+- *afterNextRender* è utile per inizializzazioni che devono avvenire *dopo il primo rendering* e non ripetersi.
+
+** Distruzione dei componenti: DestroyRef e OnDestroy
+
+Prima di Angular 16, la gestione della pulizia delle risorse avveniva con l’implementazione dell’interfaccia ~OnDestroy~:
 
 #+BEGIN_SRC typescript
-import { Component, afterNextRender } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 
 @Component({
-  selector: 'app-once-example',
-  standalone: true,
-  template: `<p>Once Example Component</p>`
+  selector: 'app-demo',
+  template: `<p>Componente con OnDestroy</p>`
 })
-export class OnceExampleComponent {
-  constructor() {
-    afterNextRender(() => {
-      console.log('Eseguito una sola volta dopo il primo render');
-    });
+export class DemoComponent implements OnDestroy {
+  ngOnDestroy() {
+    console.log('Il componente sta per essere distrutto!');
   }
 }
 #+END_SRC
 
-✅ Qui la callback sarà chiamata *solo una volta* dopo il primo rendering e mai più.
+*Problema*:
+Il metodo ~ngOnDestroy()~ richiede di implementare un’interfaccia e può portare a codice boilerplate nei componenti.
 
-** DestroyRef: una nuova gestione della distruzione
-
-In Angular 16 è stato introdotto =DestroyRef=, che permette di registrare cleanup logic in modo più esplicito e flessibile rispetto ai tradizionali ~ngOnDestroy()~.
-
-📌 Con =DestroyRef= possiamo evitare di implementare =OnDestroy= manualmente e semplificare la gestione delle subscription.
-
-** Esempio di utilizzo di DestroyRef
+*Soluzione: DestroyRef*
+Con Angular 16+ possiamo usare ~DestroyRef~ per registrare delle callback da eseguire quando il componente viene distrutto:
 
 #+BEGIN_SRC typescript
 import { Component, inject, DestroyRef } from '@angular/core';
-import { interval } from 'rxjs';
-import { takeUntil, tap } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-destroy-example',
-  standalone: true,
-  template: `<p>Destroy Example Component</p>`
+  selector: 'app-demo',
+  template: `<p>Componente con DestroyRef</p>`
 })
-export class DestroyExampleComponent {
+export class DemoComponent {
   private destroyRef = inject(DestroyRef);
 
   constructor() {
-    const timer$ = interval(1000).pipe(
-      tap(value => console.log(`Tick: ${value}`)),
-      takeUntil(this.destroyRef)
-    );
-
-    timer$.subscribe();
+    this.destroyRef.onDestroy(() => {
+      console.log('Il componente sta per essere distrutto con DestroyRef!');
+    });
   }
 }
 #+END_SRC
 
-✅ In questo esempio, l'observable verrà automaticamente completato quando il componente viene distrutto, evitando memory leaks.
+*Vantaggi di DestroyRef*:
+- *Non richiede di implementare OnDestroy*.
+- *Può essere usato direttamente nei servizi*, mentre ~ngOnDestroy~ è disponibile solo nei componenti o direttive.
+- *Consente una gestione più pulita della distruzione*.
+
+*Esempio pratico con Observable*
+Immaginiamo di avere un componente che si iscrive a un ~Observable~:
+
+#+BEGIN_SRC typescript
+import { Component, inject, DestroyRef } from '@angular/core';
+import { interval, Subscription } from 'rxjs';
+
+@Component({
+  selector: 'app-timer',
+  template: `<p>Timer attivo...</p>`
+})
+export class TimerComponent {
+  private destroyRef = inject(DestroyRef);
+  private subscription: Subscription;
+
+  constructor() {
+    this.subscription = interval(1000).subscribe(val => console.log('Tick:', val));
+
+    this.destroyRef.onDestroy(() => {
+      console.log('Cleanup: annulliamo la subscription.');
+      this.subscription.unsubscribe();
+    });
+  }
+}
+#+END_SRC
+
+*Confronto tra ngOnDestroy e DestroyRef*
+
+| Caratteristica                  | OnDestroy       | DestroyRef        |
+|----------------------------------|----------------|-------------------|
+| Richiede implementazione        | *Sì*           | *No*             |
+| Può essere usato nei servizi    | *No*           | *Sì*             |
+| Si integra con Dependency Injection | *No*       | *Sì*             |
+| Registra più callback           | *No*           | *Sì*             |
+
+---
 
 ** Conclusione
 
-- *=afterRender()=* viene eseguito dopo ogni change detection.
-- *=afterNextRender()=* viene eseguito *una sola volta dopo il primo render*.
-- *=DestroyRef=* semplifica la gestione delle risorse quando un componente viene distrutto.
+- *afterRender*: eseguito *dopo ogni aggiornamento del template*.
+- *afterNextRender*: eseguito *una sola volta dopo il primo rendering*.
+- *ngOnDestroy*: metodo classico per la pulizia dei componenti.
+- *DestroyRef*: API moderna per registrare callback di cleanup in modo più flessibile.
 
-🚀 Questi nuovi hook semplificano la gestione del ciclo di vita nei componenti standalone e migliorano la pulizia del codice.
+*Quando usare cosa?*
+- Usa *afterRender* se vuoi eseguire azioni *dopo ogni aggiornamento del DOM*.
+- Usa *afterNextRender* se vuoi un’inizializzazione *solo dopo il primo rendering*.
+- Usa *ngOnDestroy* se vuoi seguire il metodo tradizionale.
+- Usa *DestroyRef* per un approccio più pulito e moderno.
 
 -----
 
 
 #+BEGIN_COMMENT
-** DOM APIs
-*** afterRender & afterNextRender
-*** DestroyRef
-
 * Signal
 * Extra
 #+END_COMMENT
