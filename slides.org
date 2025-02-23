@@ -1,8 +1,6 @@
-#+TITLE:    Angular what's new (16.x -> 19.x)
+#+TITLE:    Angular what's new (16.x → 19.x)
 #+AUTHOR:   Claudio Marchiori
 #+LANGUAGE: it
-
------
 
 * Componenti Standalone
 
@@ -461,10 +459,108 @@ export class DashboardComponent {
 
 -----
 
+* Nuovi Lifecycle Hooks in Angular: afterRender, afterNextRender e DestroyRef
+
+Con Angular 16+, il framework ha introdotto nuovi lifecycle hooks per gestire meglio il rendering e la distruzione dei componenti.
+Questi sono particolarmente utili nei **Standalone Components** e semplificano la gestione degli effetti collaterali post-rendering.
+
+** afterRender e afterNextRender
+
+*=afterRender()=* e *=afterNextRender()=* sono due nuovi lifecycle hooks che permettono di eseguire codice dopo il rendering del componente.
+
+- *=afterRender()=*: Viene eseguito *dopo ogni change detection* se il componente è stato aggiornato.
+- *=afterNextRender()=*: Viene eseguito *solo una volta dopo il primo rendering* e non ad ogni aggiornamento.
+
+** Esempio di afterRender()
+
+#+BEGIN_SRC typescript
+import { Component, afterRender } from '@angular/core';
+
+@Component({
+  selector: 'app-example',
+  standalone: true,
+  template: `<p>Example Component</p>`
+})
+export class ExampleComponent {
+  constructor() {
+    afterRender(() => {
+      console.log('Eseguito dopo ogni change detection');
+    });
+  }
+}
+#+END_SRC
+
+📌 In questo esempio, la callback dentro =afterRender()= verrà eseguita dopo ogni change detection.
+
+** Esempio di afterNextRender()
+
+Se vogliamo eseguire codice *solo dopo il primo render*, usiamo =afterNextRender()=:
+
+#+BEGIN_SRC typescript
+import { Component, afterNextRender } from '@angular/core';
+
+@Component({
+  selector: 'app-once-example',
+  standalone: true,
+  template: `<p>Once Example Component</p>`
+})
+export class OnceExampleComponent {
+  constructor() {
+    afterNextRender(() => {
+      console.log('Eseguito una sola volta dopo il primo render');
+    });
+  }
+}
+#+END_SRC
+
+✅ Qui la callback sarà chiamata *solo una volta* dopo il primo rendering e mai più.
+
+** DestroyRef: una nuova gestione della distruzione
+
+In Angular 16 è stato introdotto =DestroyRef=, che permette di registrare cleanup logic in modo più esplicito e flessibile rispetto ai tradizionali ~ngOnDestroy()~.
+
+📌 Con =DestroyRef= possiamo evitare di implementare =OnDestroy= manualmente e semplificare la gestione delle subscription.
+
+** Esempio di utilizzo di DestroyRef
+
+#+BEGIN_SRC typescript
+import { Component, inject, DestroyRef } from '@angular/core';
+import { interval } from 'rxjs';
+import { takeUntil, tap } from 'rxjs/operators';
+
+@Component({
+  selector: 'app-destroy-example',
+  standalone: true,
+  template: `<p>Destroy Example Component</p>`
+})
+export class DestroyExampleComponent {
+  private destroyRef = inject(DestroyRef);
+
+  constructor() {
+    const timer$ = interval(1000).pipe(
+      tap(value => console.log(`Tick: ${value}`)),
+      takeUntil(this.destroyRef)
+    );
+
+    timer$.subscribe();
+  }
+}
+#+END_SRC
+
+✅ In questo esempio, l'observable verrà automaticamente completato quando il componente viene distrutto, evitando memory leaks.
+
+** Conclusione
+
+- *=afterRender()=* viene eseguito dopo ogni change detection.
+- *=afterNextRender()=* viene eseguito *una sola volta dopo il primo render*.
+- *=DestroyRef=* semplifica la gestione delle risorse quando un componente viene distrutto.
+
+🚀 Questi nuovi hook semplificano la gestione del ciclo di vita nei componenti standalone e migliorano la pulizia del codice.
+
+-----
 
 
 #+BEGIN_COMMENT
-** viewProvider
 ** DOM APIs
 *** afterRender & afterNextRender
 *** DestroyRef
