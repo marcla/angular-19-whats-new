@@ -624,6 +624,212 @@ export class TimerComponent {
 
 -----
 
+* Content Projection con <ng-content>
+
+** Introduzione
+
+La content projection è una funzionalità di Angular che consente di inserire contenuti esterni all'interno di un componente. A partire dalla versione 16, Angular ha introdotto nuove funzionalità per rendere la content projection più potente e flessibile, come il supporto per i **valori di default** nei blocchi ~<ng-content>~.
+
+** Default Value per la Content Projection (Novità dalla v16)
+
+A partire da Angular 16, è possibile definire un **valore di default** per i blocchi ~<ng-content>~. Se il contenuto proiettato non è fornito, verrà utilizzato il valore di default.
+
+#+BEGIN_SRC html
+<!-- Componente figlio -->
+<div class="card">
+  <ng-content select="[header]">
+    <p>Intestazione predefinita</p> <!-- Valore di default -->
+  </ng-content>
+  <ng-content select="[body]">
+    <p>Corpo predefinito</p> <!-- Valore di default -->
+  </ng-content>
+</div>
+
+<!-- Componente genitore -->
+<app-card>
+  <!-- Nessun contenuto proiettato per [header] e [body] -->
+</app-card>
+#+END_SRC
+
+*Risultato*
+#+BEGIN_SRC html
+<app-card>
+  <div class="card">
+    <p>Intestazione predefinita</p>
+    <p>Corpo predefinito</p>
+  </div>
+</app-card>
+#+END_SRC
+
+-----
+
+* Deferred Loading con @defer (Novità dalla v17)
+
+** Introduzione
+
+Il deferred loading (caricamento differito) è una tecnica che consente di caricare parti di un'applicazione solo quando sono necessarie, migliorando le prestazioni iniziali. Angular introduce la direttiva ~@defer~ a partire dalla versione 17 per implementare facilmente questa funzionalità. Questa direttiva è particolarmente utile per ottimizzare il caricamento di componenti pesanti, moduli o risorse che non sono necessari immediatamente.
+
+** Utilizzo di @defer
+
+La direttiva ~@defer~ permette di ritardare il caricamento di un blocco di template fino al verificarsi di una condizione specifica, come l'interazione dell'utente o il raggiungimento di un determinato stato.
+
+*** Esempio base
+
+#+BEGIN_SRC html
+@defer {
+  @defer (on viewport) {
+  <app-heavy-component></app-heavy-component>
+} @placeholder {
+  <div>Caricamento in corso...</div>
+}
+}
+#+END_SRC
+
+*** Trigger disponibili
+Angular supporta diversi trigger per il caricamento differito:
+- ~on viewport~: Carica il contenuto quando entra nel viewport (ad esempio, quando l'utente scorre fino a quel punto).
+- ~on interaction~: Carica il contenuto quando l'utente interagisce con un elemento (ad esempio, un clic o un tocco).
+- ~on hover~: Carica il contenuto quando l'utente passa il mouse su un elemento.
+- ~on idle~: Carica il contenuto quando il browser è inattivo (dopo il caricamento iniziale della pagina).
+- ~on timer~: Carica il contenuto dopo un determinato ritardo (ad esempio, 2 secondi).
+- ~on immediate~: Carica il contenuto immediatamente dopo il rendering iniziale (utile per testare il comportamento).
+
+*** Esempi avanzati
+
+1. **Caricamento su interazione:**
+   #+BEGIN_SRC html
+   @defer (on interaction) {
+     <app-heavy-component></app-heavy-component>
+   } @placeholder {
+     <button>Clicca per caricare</button>
+   }
+   #+END_SRC
+
+2. **Caricamento con ritardo:**
+   #+BEGIN_SRC html
+   @defer (on timer(2000)) {
+     <app-heavy-component></app-heavy-component>
+   } @placeholder {
+     <div>Caricamento tra 2 secondi...</div>
+   }
+   #+END_SRC
+
+3. **Combinazione di trigger:**
+   #+BEGIN_SRC html
+   @defer (on viewport; on interaction) {
+     <app-heavy-component></app-heavy-component>
+   } @placeholder {
+     <div>Scorri o clicca per caricare</div>
+   }
+   #+END_SRC
+
+*** Gestione degli stati
+
+Angular fornisce blocchi aggiuntivi per gestire gli stati del caricamento differito:
+- ~@placeholder~: Definisce un contenuto temporaneo da mostrare durante l'attesa del caricamento.
+- ~@loading~: Definisce un contenuto da mostrare durante il caricamento effettivo (ad esempio, uno spinner).
+- ~@error~: Definisce un contenuto da mostrare in caso di errore durante il caricamento.
+
+*Esempio completo:*
+
+#+BEGIN_SRC html
+@defer (on viewport) {
+  <app-heavy-component></app-heavy-component>
+} @placeholder {
+  <div>Contenuto in caricamento...</div>
+} @loading {
+  <div>Caricamento in corso...</div>
+} @error {
+  <div>Errore durante il caricamento.</div>
+}
+#+END_SRC
+
+*** Prefetching delle risorse
+
+Angular supporta anche il prefetching delle risorse, che consente di caricare in anticipo i componenti o i moduli necessari, senza renderli immediatamente visibili. Questo è utile per migliorare l'esperienza utente quando si prevede che una risorsa sarà presto necessaria.
+
+*Esempio:*
+
+#+BEGIN_SRC html
+@defer (on interaction; prefetch on viewport) {
+  <app-heavy-component></app-heavy-component>
+} @placeholder {
+  <button>Clicca per caricare</button>
+}
+#+END_SRC
+
+** Casi d'uso pratici
+
+1. **Componenti pesanti:**
+   - Utilizzare ~@defer~ per caricare componenti complessi o pesanti solo quando sono visibili o necessari.
+   - Esempio: Caricare un grafico o una mappa solo quando l'utente scorre fino a quella sezione.
+
+2. **Moduli lazy-loaded:**
+   - Combinare ~@defer~ con il lazy loading dei moduli per ottimizzare ulteriormente le prestazioni.
+   - Esempio: Caricare un modulo di amministrazione solo quando l'utente accede a quella sezione.
+
+3. **Risorse esterne:**
+   - Utilizzare ~@defer~ per caricare risorse esterne, come video o immagini di grandi dimensioni, solo quando necessario.
+   - Esempio: Caricare un video solo quando l'utente interagisce con un pulsante di riproduzione.
+
+** Vantaggi del Deferred Loading
+
+- **Prestazioni migliorate:** Riduce il carico iniziale dell'applicazione, migliorando i tempi di caricamento.
+- **Esperienza utente ottimizzata:** Carica solo ciò che è necessario, quando è necessario, evitando rallentamenti.
+- **Flessibilità:** Supporta diversi trigger e stati per adattarsi a vari scenari.
+- **Integrazione con il lazy loading:** Funziona perfettamente con il lazy loading dei moduli per un'ottimizzazione completa.
+
+-----
+
+* Variabili nei Template con @let (Angular 18)
+
+** Introduzione
+
+A partire dalla versione 18, Angular introduce la sintassi ~@let~ per definire variabili direttamente nei template. Questo semplifica la gestione di valori calcolati o complessi all'interno dei template, migliorando la leggibilità e la manutenibilità del codice.
+
+** Utilizzo di @let
+La sintassi ~@let~ permette di definire una variabile all'interno di un blocco di template, che può essere riutilizzata in seguito.
+
+*** Esempio di base
+
+#+BEGIN_SRC html
+@let total = item.price * item.quantity;
+
+<p>Totale: {{ total }}</p>
+#+END_SRC
+
+*** Utilizzo con condizioni
+#+BEGIN_SRC html
+@let discount = user.isPremium ? 0.2 : 0;
+
+<p>Sconto applicato: {{ discount * 100 }}%</p>
+#+END_SRC
+
+*** Utilizzo con funzioni
+#+BEGIN_SRC html
+@let formattedDate = formatDate(order.date);
+
+<p>Data dell'ordine: {{ formattedDate }}</p>
+#+END_SRC
+
+*** Utilizzo con strutture di controllo
+#+BEGIN_SRC html
+@let utente = { nome: "Luca", loggato: true };
+
+@if (utente.loggato) {
+  <p>Benvenuto, {{ utente.nome }}!</p>
+} @else {
+  <p>Effettua il login</p>
+}
+#+END_SRC
+
+** Vantaggi di @let
+
+- **Leggibilità:** Riduce la complessità dei template evitando espressioni ripetute.
+- **Manutenibilità:** Centralizza la logica di calcolo direttamente nel template.
+- **Flessibilità:** Supporta valori calcolati, condizioni e chiamate a funzioni.
+
+---
 
 #+BEGIN_COMMENT
 * Signal
