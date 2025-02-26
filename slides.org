@@ -19,7 +19,7 @@ Un componente standalone dichiara le proprie dipendenze (componenti, direttive e
 
 ** Approccio con moduli (Angular < 16)
 
-#+begin_src typescript
+#+BEGIN_SRC typescript
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -43,11 +43,11 @@ import { ButtonComponent } from './button.component';
   exports: [ButtonComponent, /* ... */]
 })
 export class ButtonModule { }
-#+end_src
+#+END_SRC
 
 ** Approccio con componenti standalone (Angular >= 16)
 
-#+begin_src typescript
+#+BEGIN_SRC typescript
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -92,13 +92,13 @@ export class ButtonComponent {
     console.log(this.myForm.value);
   }
 }
-#+end_src
+#+END_SRC
 
 ** Componenti Standalone
 
 Un componente standalone è un componente a tutti gli effetti, con la differenza che viene definito come tale tramite la proprietà ~standalone: true~ nel decoratore.
 
-#+begin_src typescript
+#+BEGIN_SRC typescript
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 
@@ -113,26 +113,26 @@ import { ReactiveFormsModule } from '@angular/forms';
   providers: [],
 })
 export class MyComponent { }
-#+end_src
+#+END_SRC
 
 *** Direttive Standalone
 
 Anche le direttive possono essere definite come standalone, utilizzando la stessa proprietà ~standalone: true~ nel decoratore ~@Directive~.
 
-#+begin_src typescript
+#+BEGIN_SRC typescript
 @Directive({
   selector: '[appMyAttribute]',
   standalone: true,
   providers: []
 })
 export class MyAttributeDirective { }
-#+end_src
+#+END_SRC
 
 *** Pipe Standalone
 
 Analogamente, anche le pipe possono essere standalone e dichiarate all'interno della sezione ~imports~ del componente che le utilizza.
 
-#+begin_src typescript
+#+BEGIN_SRC typescript
 @Pipe({
   name: 'myFilter',
   standalone: true
@@ -143,13 +143,13 @@ export class MyFilterPipe implements PipeTransform {
     return value;
   }
 }
-#+end_src
+#+END_SRC
 
 *** Esempio di utilizzo
 
 In un componente standalone, puoi importare direttamente altri componenti, direttive o pipe standalone:
 
-#+begin_src typescript
+#+BEGIN_SRC typescript
 import { MyAppComponent } from './my-app.component';
 import { MyAttributeDirective } from './my-attribute.directive';
 import { MyFilterPipe } from './my-filter.pipe';
@@ -163,7 +163,7 @@ import { FooService } from './foo.service';
   /* ... */
 })
 export class MyParentComponent { /* ... */ }
-#+end_src
+#+END_SRC
 
 ** Componenti, direttive e pipe standalone: una distinzione importante
 
@@ -187,7 +187,7 @@ La differenza fondamentale risiede nel ruolo che componenti, direttive e pipe sv
 
 Per iniziare a convertire dei componenti contenuti in un modulo in *standalone components* è possibile utilizzare questo approccio conservativo per mantenere la retrocompatibilità:
 
-#+begin_src typescript
+#+BEGIN_SRC typescript
 import { MyStandaloneAppComponent } from './my-app.component';
 import { MyStandaloneAttributeDirective } from './my-attribute.directive';
 import { MyFilterPipe } from './my-filter.pipe';
@@ -201,7 +201,7 @@ import { MyFilterPipe } from './my-filter.pipe';
   exports: [MyFilterPipe, MyStandaloneAppComponent, MyStandaloneAttributeDirective]
 })
 export class MyOldModule { /* ... */ }
-#+end_src
+#+END_SRC
 
 ** Componenti Standalone: addio NgModule?
 
@@ -222,7 +222,7 @@ Con i componenti standalone, questo approccio cambia.
 *Configurazione di servizi essenziali (HttpClient e Routing):*
 
 - *HttpClient:* Per configurare ~HttpClient~, utilizza la funzione ~provideHttpClient()~ all'interno dell'array ~providers~ del metodo ~bootstrapApplication()~ (nel tuo file ~main.ts~):
-  #+begin_src typescript
+  #+BEGIN_SRC typescript
   import { bootstrapApplication } from '@angular/platform-browser';
   import { AppComponent } from './app/app.component';
   import { provideHttpClient } from '@angular/common/http';
@@ -232,10 +232,10 @@ Con i componenti standalone, questo approccio cambia.
       provideHttpClient(/* ... */)
     ]
   });
-  #+end_src
+  #+END_SRC
 
 - *Routing:* Per il routing, utilizza la funzione ~provideRouter()~ sempre all'interno dell'array ~providers~ di ~bootstrapApplication()~:
-  #+begin_src typescript
+  #+BEGIN_SRC typescript
   import { bootstrapApplication } from '@angular/platform-browser';
   import { AppComponent } from './app/app.component';
   import { provideRouter } from '@angular/router';
@@ -246,7 +246,7 @@ Con i componenti standalone, questo approccio cambia.
       provideRouter(routes, withComponentInputBinding(), /* ... */)
     ]
   });
-  #+end_src
+  #+END_SRC
 
 -----
 
@@ -845,7 +845,146 @@ La sintassi ~@let~ permette di definire una variabile all'interno di un blocco d
 - *Manutenibilità:* Centralizza la logica di calcolo direttamente nel template.
 - *Flessibilità:* Supporta valori calcolati, condizioni e chiamate a funzioni.
 
----
+-----
+
+* Signal in Angular
+
+** Introduzione ai Signal
+
+Dalla versione *Angular 16*, è stato introdotto il concetto di *Signal*, una nuova API per la gestione dello stato reattivo. I Signal rappresentano un'alternativa più efficiente e prevedibile rispetto al tradizionale ~RxJS~, semplificando il tracking delle dipendenze e l'aggiornamento della UI.
+
+A differenza degli `Observable`, i Signal sono *sincroni*, *privi di effetti collaterali* e *tracciano automaticamente le dipendenze*, riducendo la necessità di gestione esplicita delle sottoscrizioni.
+
+** Perché Signal?
+
+- ✅ *Risoluzione automatica delle dipendenze*: i Signal notificano automaticamente i cambiamenti, eliminando la necessità di ~async pipe~ o ~subscribe~.
+- ✅ *Performance ottimizzate*: Angular ottimizza il rendering basandosi sui cambiamenti dei Signal, riducendo i cicli di change detection non necessari.
+- ✅ *API più semplice*: la gestione dello stato diventa più intuitiva e meno verbosa rispetto agli Observable.
+
+** Creazione e utilizzo di un Signal
+Per creare un Signal, si utilizza la funzione ~signal()~ fornita da Angular. È possibile inizializzare il Signal con un valore predefinito e aggiornarlo utilizzando metodi specifici.
+
+*** Esempio di base
+#+BEGIN_SRC typescript
+import { Component, signal } from '@angular/core';
+
+@Component({
+  selector: 'app-counter',
+  template: `
+    <p>Count: {{ count() }}</p>
+
+    <button (click)="increment()">Increment</button>
+  `,
+})
+export class CounterComponent {
+  count = signal(0); // ← Signal con valore iniziale 0
+
+  increment() {
+    this.count.update((value) => value + 1); // ← Incrementa il valore
+  }
+}
+#+END_SRC
+
+** Aggiornamento di un Signal
+
+I Signal offrono due metodi principali per modificarne il valore:
+
+| Metodo         | Descrizione                                             |
+|---------------|---------------------------------------------------------|
+| `set(value)`  | Imposta direttamente il valore                          |
+| `update(fn)`  | Modifica il valore in base allo stato corrente          |
+
+** Signal e Computed Values
+I Signal possono essere combinati con *computed values* per creare valori derivati che si aggiornano automaticamente quando i Signal di cui dipendono cambiano.
+
+*** Esempio di computed value
+#+BEGIN_SRC typescript
+import { signal, computed } from '@angular/core';
+
+const price = signal(10);
+const quantity = signal(2);
+
+// ↓ Calcolo del totale basato su price e quantity
+const total = computed(() => price() * quantity());
+
+console.log(total()); // Output: 20
+
+// ↓ Aggiornamento di price
+price.set(15);
+console.log(total()); // Output: 30 (aggiornato automaticamente)
+#+END_SRC
+
+** Signal e Effetti
+Gli *effetti* (~effect()~) sono funzioni che vengono eseguite automaticamente quando uno o più Signal cambiano. Sono utili per eseguire operazioni collaterali, come il logging o l'interazione con API esterne.
+
+*** Esempio di effetto
+#+BEGIN_SRC typescript
+import { signal, effect } from '@angular/core';
+
+const count = signal(0);
+
+// Effetto che viene eseguito ogni volta che count cambia
+effect(() => {
+  console.log('Count changed:', count());
+});
+
+count.set(1); // Log: "Count changed: 1"
+count.set(2); // Log: "Count changed: 2"
+#+END_SRC
+
+** Integrazione tra Signal e RxJS
+Angular fornisce due utility per integrare i Signal con gli Observable:
+- ~toSignal~: Converte un Observable in un Signal.
+- ~toObservable~: Converte un Signal in un Observable.
+
+*** Conversione da Observable a Signal (toSignal)
+#+BEGIN_SRC typescript
+import { toSignal } from '@angular/core/rxjs-interop';
+import { interval } from 'rxjs';
+
+const source$ = interval(1000); // Observable che emette un valore ogni secondo
+const count = toSignal(source$, { initialValue: 0 }); // Conversione in Signal
+
+console.log(count()); // Output: 0 (valore iniziale)
+// Dopo 1 secondo: count() sarà 1, dopo 2 secondi: 2, e così via...
+#+END_SRC
+
+*** Conversione da Signal a Observable (toObservable)
+#+BEGIN_SRC typescript
+import { signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { take } from 'rxjs/operators';
+
+const count = signal(0); // Signal con valore iniziale 0
+const count$ = toObservable(count); // Conversione in Observable
+
+count$.pipe(take(3)).subscribe((value) => {
+  console.log('Observable value:', value);
+});
+
+count.set(1); // Log: "Observable value: 1"
+count.set(2); // Log: "Observable value: 2"
+count.set(3); // Log: "Observable value: 3"
+#+END_SRC
+
+
+** Casi d'uso pratici
+1. *Gestione dello stato globale:*
+   - Utilizzare i Signal per gestire lo stato globale dell'applicazione, sostituendo o integrando librerie come NgRx o Akita.
+
+2. *Ottimizzazione delle prestazioni:*
+   - Ridurre i cicli di change detection utilizzando i Signal per gestire solo le parti dello stato che cambiano frequentemente.
+
+3. *Sostituzione di Observable semplici:*
+   - Sostituire Observable semplici (ad esempio, per gestire un contatore o un flag) con Signal per una gestione più diretta e meno verbosa.
+
+4. *Integrazione con librerie basate su Observable:*
+   - Utilizzare ~toObservable~ per integrare i Signal con librerie o servizi esistenti che si basano su Observable.
+
+** Conclusione
+I Signal rappresentano un'evoluzione significativa nella gestione dello stato in Angular, offrendo un approccio reattivo, efficiente e semplice da utilizzare. Con la loro integrazione nativa nel framework, i Signal sono destinati a diventare uno strumento fondamentale per gli sviluppatori Angular, specialmente nelle applicazioni moderne che richiedono alte prestazioni e una gestione dello stato ottimizzata.
+
+-----
 
 #+BEGIN_COMMENT
 * Signal
