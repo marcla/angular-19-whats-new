@@ -1,5 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 
+/**
+ * - use an input to set quantity value
+ */
+
 @Component({
   selector: 'app-signal-cart',
   template: `
