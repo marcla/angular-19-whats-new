@@ -12,7 +12,6 @@ import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 
 @Component({
   selector: 'app-signal-counter',
-  standalone: true,
   template: `
     <p>Count: {{ count() }}</p>
 
@@ -35,7 +34,6 @@ export class SignalCounterComponent {
 
 @Component({
   selector: 'app-counter',
-  standalone: true,
   template: `
     <p>Count: {{ count }}</p>
 
