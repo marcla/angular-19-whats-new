@@ -1,0 +1,23 @@
+{
+  "editor.formatOnSave": true,
+  "prettier.configPath": ".prettierrc",
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
+  },
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
+  },
+  "[scss, css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "todo-tree.tree.showBadges": true
+}
