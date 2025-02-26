@@ -5,6 +5,9 @@ import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
  * - add increment by 2
  * - add increment by 4
  * - add odd / event
+ * - randomize initial value
+ * - create a service
+ * - add a setInterval
  */
 
 @Component({
