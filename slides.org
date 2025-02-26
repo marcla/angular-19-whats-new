@@ -4,11 +4,14 @@
 
 * Componenti Standalone
 
+- [[https://angular.dev/guide/components#using-components][Guida ufficiale Angular]]
+# - [[][Playground]]
+
 In Angular 16 è stata introdotta una nuova tipologia di componenti, le *standalone components*, che offrono un modo più semplice e modulare di sviluppare le applicazioni.
 La principale differenza rispetto ai componenti tradizionali è che non necessitano di essere dichiarati all'interno di un modulo *NgModule*. Questo semplifica la struttura e il boilerplate del codice, rendendolo più leggibile e manutenibile.
 Un componente standalone dichiara le proprie dipendenze (componenti, direttive e pipe) direttamente tramite la proprietà ~imports~ del decoratore ~@Component~.
 
-**Vantaggi**
+*Vantaggi*
 
   - Eliminazione dei moduli NgModule: struttura più semplice e meno codice.
   - Maggiore modularità: componenti, direttive e pipe più indipendenti e riutilizzabili.
@@ -249,7 +252,7 @@ Con i componenti standalone, questo approccio cambia.
 
 * Directive Composition API e hostDirectives in Angular
 
-- [[https://angular.dev/guide/directives/directive-composition-api][Guida ufficiale Angular]] ([[https://stackblitz.com/edit/stackblitz-starters-jrxkcahg][Playground]])
+- [[https://angular.dev/guide/directives/directive-composition-api][Guida ufficiale Angular]] - [[https://stackblitz.com/edit/stackblitz-starters-jrxkcahg][Playground]]
 
 A partire da Angular 16, è possibile comporre componenti e direttive in modo più modulare grazie alle *Directive Composition API*.
 
@@ -291,7 +294,7 @@ export class LoadingButtonComponent {}
 
 L'uso di ~hostDirectives~ *non* fa ereditare i metodi interni della direttiva aggiunta, *a differenza di `extends`* nell'ereditarietà classica.
 
-*📌 Differenza tra `hostDirectives` ed `extends`*
+*Differenza tra `hostDirectives` ed `extends`*
 | Caratteristica               | `extends` (Ereditarietà classica) | `hostDirectives` |
 |------------------------------|----------------------------------|------------------|
 | *Eredita metodi e proprietà protette/private* | ✅ Sì | ❌ No |
@@ -400,6 +403,7 @@ export class ExampleDirective {}
 * Lazy-loading Components
 
 - [[https://angular.dev/guide/components/programmatic-rendering#lazy-loading-components][Guida ufficiale Angular]]
+# - [[][Playground]]
 
 A partire da Angular 17, è possibile *caricare dinamicamente i componenti in modo lazy* senza doverli dichiarare manualmente nei moduli o nei componenti host.
 
@@ -460,6 +464,9 @@ export class DashboardComponent {
 -----
 
 * Nuove Lifecycle Hooks in Angular: afterRender, afterNextRender e DestroyRef
+
+- [[https://angular.dev/guide/components/lifecycle#afterrender-and-afternextrender][Guida ufficiale Angular]]
+# - [[][Playground]]
 
 Con l’introduzione delle nuove versioni di Angular, sono stati aggiunti nuovi lifecycle hooks che migliorano la gestione del rendering e della distruzione dei componenti. In particolare:
 
@@ -626,13 +633,16 @@ export class TimerComponent {
 
 * Content Projection con <ng-content>
 
+- [[https://angular.dev/guide/components/content-projection][Guida ufficiale Angular]]
+# - [[][Playground]]
+
 ** Introduzione
 
-La content projection è una funzionalità di Angular che consente di inserire contenuti esterni all'interno di un componente. A partire dalla versione 16, Angular ha introdotto nuove funzionalità per rendere la content projection più potente e flessibile, come il supporto per i **valori di default** nei blocchi ~<ng-content>~.
+La content projection è una funzionalità di Angular che consente di inserire contenuti esterni all'interno di un componente. A partire dalla versione 16, Angular ha introdotto nuove funzionalità per rendere la content projection più potente e flessibile, come il supporto per i *valori di default* nei blocchi ~<ng-content>~.
 
 ** Default Value per la Content Projection (Novità dalla v16)
 
-A partire da Angular 16, è possibile definire un **valore di default** per i blocchi ~<ng-content>~. Se il contenuto proiettato non è fornito, verrà utilizzato il valore di default.
+A partire da Angular 16, è possibile definire un *valore di default* per i blocchi ~<ng-content>~. Se il contenuto proiettato non è fornito, verrà utilizzato il valore di default.
 
 #+BEGIN_SRC html
 <!-- Componente figlio -->
@@ -665,6 +675,9 @@ A partire da Angular 16, è possibile definire un **valore di default** per i bl
 
 * Deferred Loading con @defer (Novità dalla v17)
 
+- [[https://angular.dev/guide/templates/defer][Guida ufficiale Angular]]
+# - [[][Playground]]
+
 ** Introduzione
 
 Il deferred loading (caricamento differito) è una tecnica che consente di caricare parti di un'applicazione solo quando sono necessarie, migliorando le prestazioni iniziali. Angular introduce la direttiva ~@defer~ a partire dalla versione 17 per implementare facilmente questa funzionalità. Questa direttiva è particolarmente utile per ottimizzare il caricamento di componenti pesanti, moduli o risorse che non sono necessari immediatamente.
@@ -696,7 +709,7 @@ Angular supporta diversi trigger per il caricamento differito:
 
 *** Esempi avanzati
 
-1. **Caricamento su interazione:**
+1. *Caricamento su interazione:*
    #+BEGIN_SRC html
    @defer (on interaction) {
      <app-heavy-component></app-heavy-component>
@@ -705,7 +718,7 @@ Angular supporta diversi trigger per il caricamento differito:
    }
    #+END_SRC
 
-2. **Caricamento con ritardo:**
+2. *Caricamento con ritardo:*
    #+BEGIN_SRC html
    @defer (on timer(2000)) {
      <app-heavy-component></app-heavy-component>
@@ -714,7 +727,7 @@ Angular supporta diversi trigger per il caricamento differito:
    }
    #+END_SRC
 
-3. **Combinazione di trigger:**
+3. *Combinazione di trigger:*
    #+BEGIN_SRC html
    @defer (on viewport; on interaction) {
      <app-heavy-component></app-heavy-component>
@@ -760,28 +773,31 @@ Angular supporta anche il prefetching delle risorse, che consente di caricare in
 
 ** Casi d'uso pratici
 
-1. **Componenti pesanti:**
+1. *Componenti pesanti:*
    - Utilizzare ~@defer~ per caricare componenti complessi o pesanti solo quando sono visibili o necessari.
    - Esempio: Caricare un grafico o una mappa solo quando l'utente scorre fino a quella sezione.
 
-2. **Moduli lazy-loaded:**
+2. *Moduli lazy-loaded:*
    - Combinare ~@defer~ con il lazy loading dei moduli per ottimizzare ulteriormente le prestazioni.
    - Esempio: Caricare un modulo di amministrazione solo quando l'utente accede a quella sezione.
 
-3. **Risorse esterne:**
+3. *Risorse esterne:*
    - Utilizzare ~@defer~ per caricare risorse esterne, come video o immagini di grandi dimensioni, solo quando necessario.
    - Esempio: Caricare un video solo quando l'utente interagisce con un pulsante di riproduzione.
 
 ** Vantaggi del Deferred Loading
 
-- **Prestazioni migliorate:** Riduce il carico iniziale dell'applicazione, migliorando i tempi di caricamento.
-- **Esperienza utente ottimizzata:** Carica solo ciò che è necessario, quando è necessario, evitando rallentamenti.
-- **Flessibilità:** Supporta diversi trigger e stati per adattarsi a vari scenari.
-- **Integrazione con il lazy loading:** Funziona perfettamente con il lazy loading dei moduli per un'ottimizzazione completa.
+- *Prestazioni migliorate:* Riduce il carico iniziale dell'applicazione, migliorando i tempi di caricamento.
+- *Esperienza utente ottimizzata:* Carica solo ciò che è necessario, quando è necessario, evitando rallentamenti.
+- *Flessibilità:* Supporta diversi trigger e stati per adattarsi a vari scenari.
+- *Integrazione con il lazy loading:* Funziona perfettamente con il lazy loading dei moduli per un'ottimizzazione completa.
 
 -----
 
 * Variabili nei Template con @let (Angular 18)
+
+- [[https://angular.dev/guide/templates/variables#using-let][Guida ufficiale Angular]]
+# - [[][Playground]]
 
 ** Introduzione
 
@@ -825,9 +841,9 @@ La sintassi ~@let~ permette di definire una variabile all'interno di un blocco d
 
 ** Vantaggi di @let
 
-- **Leggibilità:** Riduce la complessità dei template evitando espressioni ripetute.
-- **Manutenibilità:** Centralizza la logica di calcolo direttamente nel template.
-- **Flessibilità:** Supporta valori calcolati, condizioni e chiamate a funzioni.
+- *Leggibilità:* Riduce la complessità dei template evitando espressioni ripetute.
+- *Manutenibilità:* Centralizza la logica di calcolo direttamente nel template.
+- *Flessibilità:* Supporta valori calcolati, condizioni e chiamate a funzioni.
 
 ---
 
