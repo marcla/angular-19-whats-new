@@ -986,7 +986,324 @@ I Signal rappresentano un'evoluzione significativa nella gestione dello stato in
 
 -----
 
-#+BEGIN_COMMENT
-* Signal
-* Extra
-#+END_COMMENT
+* Custom Event (Input & Output)
+
+** Introduzione
+In Angular, i componenti comunicano tra loro utilizzando gli *input* e gli *output*. Gli input permettono di passare dati da un componente padre a un componente figlio, mentre gli output permettono al componente figlio di emettere eventi che il componente padre può gestire. Questa comunicazione è fondamentale per creare applicazioni modulari e riutilizzabili.
+
+** Input
+Gli input sono proprietà di un componente che possono essere impostate dall'esterno, tipicamente dal componente padre. Per definire un input, si utilizza il decoratore ~@Input~.
+
+*** Esempio di Input
+#+begin_src typescript
+import { Component, Input } from '@angular/core';
+
+@Component({
+  selector: 'app-child',
+  template: `<p>{{ message }}</p>`,
+})
+export class ChildComponent {
+  @Input() message: string = ''; // Input che riceve un messaggio
+}
+#+end_src
+
+*** Utilizzo nel componente padre
+#+begin_src typescript
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-parent',
+  template: `
+    <app-child [message]="parentMessage"></app-child>
+  `,
+})
+export class ParentComponent {
+  parentMessage = 'Hello from parent!';
+}
+#+end_src
+
+** Output
+Gli output permettono a un componente figlio di emettere eventi che il componente padre può gestire. Per definire un output, si utilizza il decoratore ~@Output~ insieme a un ~EventEmitter~.
+
+*** Esempio di Output
+#+begin_src typescript
+import { Component, Output, EventEmitter } from '@angular/core';
+
+@Component({
+  selector: 'app-child',
+  template: `
+    <button (click)="sendMessage()">Send Message</button>
+  `,
+})
+export class ChildComponent {
+  @Output() messageEvent = new EventEmitter<string>();
+
+  sendMessage() {
+    this.messageEvent.emit('Hello from child!');
+  }
+}
+#+end_src
+
+*** Utilizzo nel componente padre
+#+begin_src typescript
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-parent',
+  template: `
+    <app-child (messageEvent)="receiveMessage($event)"></app-child>
+    <p>{{ receivedMessage }}</p>
+  `,
+})
+export class ParentComponent {
+  receivedMessage = '';
+
+  receiveMessage(message: string) {
+    this.receivedMessage = message;
+  }
+}
+#+end_src
+
+** Conclusione
+Gli input e gli output sono strumenti essenziali per la comunicazione tra componenti in Angular. Con gli input, i componenti possono ricevere dati dall'esterno, mentre con gli output possono emettere eventi per notificare cambiamenti o azioni.
+
+-----
+
+* Two-Way Binding con Model Inputs (Novità dalla v17)
+
+** Introduzione
+Angular 17 introduce una nuova funzionalità chiamata *Model Inputs*, che semplifica il two-way binding senza dover utilizzare la sintassi ~[(ngModel)]~. Questa funzionalità è particolarmente utile per sincronizzare lo stato tra un componente padre e un componente figlio in modo più intuitivo.
+
+** Utilizzo di Model Inputs
+Per utilizzare i Model Inputs, è sufficiente definire una proprietà con il decoratore ~@Model~ nel componente figlio. Questo permette di sincronizzare automaticamente il valore tra il componente padre e il componente figlio.
+
+*** Esempio di Model Input
+#+begin_src typescript
+import { Component, model } from '@angular/core';
+
+@Component({
+  selector: 'app-child',
+  template: `
+    <input [ngModel]="value()" (ngModelChange)="value.set($event)" />
+  `,
+})
+export class ChildComponent {
+  value = model<string>(); // Model Input per il two-way binding
+}
+#+end_src
+
+*** Utilizzo nel componente padre
+#+begin_src typescript
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-parent',
+  template: `
+    <app-child [(value)]="parentValue"></app-child>
+    <p>Valore nel padre: {{ parentValue }}</p>
+  `,
+})
+export class ParentComponent {
+  parentValue = 'Hello from parent!';
+}
+#+end_src
+
+** Vantaggi
+- *Sintassi semplificata:* Elimina la necessità di utilizzare ~[(ngModel)]~ per il two-way binding.
+- *Maggiore chiarezza:* Il codice è più leggibile e intuitivo.
+- *Integrazione con i Signal:* I Model Inputs funzionano perfettamente con i Signal.
+
+** Conclusione
+I Model Inputs rappresentano un'evoluzione del two-way binding in Angular, rendendo la sincronizzazione tra componenti più semplice e moderna.
+
+-----
+
+* View Queries (ViewChild / ViewChildren)
+
+** Introduzione
+Le *view queries* permettono di accedere a elementi del DOM o a componenti/direttive all'interno del template di un componente. Angular fornisce due decoratori per questo scopo: ~@ViewChild~ e ~@ViewChildren~.
+
+** ViewChild
+Il decoratore ~@ViewChild~ permette di ottenere un riferimento a un singolo elemento, componente o direttiva nel template.
+
+*** Esempio di ViewChild
+#+begin_src typescript
+import { Component, ViewChild, AfterViewInit } from '@angular/core';
+
+@Component({
+  selector: 'app-parent',
+  template: `
+    <app-child #child></app-child>
+  `,
+})
+export class ParentComponent implements AfterViewInit {
+  @ViewChild('child') childComponent!: ChildComponent;
+
+  ngAfterViewInit() {
+    console.log(this.childComponent); // Accesso al componente figlio
+  }
+}
+#+end_src
+
+** ViewChildren
+Il decoratore ~@ViewChildren~ permette di ottenere un riferimento a più elementi, componenti o direttive nel template.
+
+*** Esempio di ViewChildren
+#+begin_src typescript
+import { Component, ViewChildren, QueryList, AfterViewInit } from '@angular/core';
+
+@Component({
+  selector: 'app-parent',
+  template: `
+    <app-child></app-child>
+    <app-child></app-child>
+  `,
+})
+export class ParentComponent implements AfterViewInit {
+  @ViewChildren(ChildComponent) childComponents!: QueryList<ChildComponent>;
+
+  ngAfterViewInit() {
+    this.childComponents.forEach((child) => {
+      console.log(child); // Accesso a tutti i componenti figli
+    });
+  }
+}
+#+end_src
+
+** Conclusione
+Le view queries sono uno strumento potente per interagire con elementi del DOM o componenti direttamente dal codice TypeScript. ~@ViewChild~ è utile per riferimenti singoli, mentre ~@ViewChildren~ è ideale per gestire più elementi.
+
+-----
+
+* Content Queries (ContentChild / ContentChildren)
+
+** Introduzione
+Le *content queries* permettono di accedere a elementi o componenti proiettati all'interno di un componente utilizzando ~<ng-content>~. Angular fornisce due decoratori per questo scopo: ~@ContentChild~ e ~@ContentChildren~.
+
+** ContentChild
+Il decoratore ~@ContentChild~ permette di ottenere un riferimento a un singolo elemento o componente proiettato.
+
+*** Esempio di ContentChild
+#+begin_src typescript
+import { Component, ContentChild, AfterContentInit } from '@angular/core';
+
+@Component({
+  selector: 'app-parent',
+  template: `
+    <ng-content></ng-content>
+  `,
+})
+export class ParentComponent implements AfterContentInit {
+  @ContentChild('projectedContent') projectedElement!: any;
+
+  ngAfterContentInit() {
+    console.log(this.projectedElement); // Accesso all'elemento proiettato
+  }
+}
+#+end_src
+
+** ContentChildren
+Il decoratore ~@ContentChildren~ permette di ottenere un riferimento a più elementi o componenti proiettati.
+
+*** Esempio di ContentChildren
+#+begin_src typescript
+import { Component, ContentChildren, QueryList, AfterContentInit } from '@angular/core';
+
+@Component({
+  selector: 'app-parent',
+  template: `
+    <ng-content></ng-content>
+  `,
+})
+export class ParentComponent implements AfterContentInit {
+  @ContentChildren(ChildComponent) projectedComponents!: QueryList<ChildComponent>;
+
+  ngAfterContentInit() {
+    this.projectedComponents.forEach((child) => {
+      console.log(child); // Accesso a tutti i componenti proiettati
+    });
+  }
+}
+#+end_src
+
+** Conclusione
+Le content queries sono utili per interagire con contenuti proiettati all'interno di un componente. ~@ContentChild~ è adatto per riferimenti singoli, mentre ~@ContentChildren~ è ideale per gestire più elementi.
+
+-----
+
+* LinkedSignal (Novità dalla v18)
+
+** Introduzione
+I *LinkedSignal* sono una nuova funzionalità introdotta in Angular 18 che permette di creare Signal collegati tra loro. Quando un Signal cambia, tutti i Signal collegati vengono aggiornati automaticamente. Questo è utile per gestire relazioni complesse tra stati in modo reattivo.
+
+** Utilizzo di LinkedSignal
+Per creare un LinkedSignal, si utilizza la funzione ~linkedSignal~, che collega due o più Signal.
+
+*** Esempio di LinkedSignal
+#+begin_src typescript
+import { signal, linkedSignal } from '@angular/core';
+
+const sourceSignal = signal(0);
+const linkedSignal = linkedSignal(sourceSignal, (value) => value * 2);
+
+console.log(linkedSignal()); // Output: 0
+
+sourceSignal.set(5);
+console.log(linkedSignal()); // Output: 10 (aggiornato automaticamente)
+#+end_src
+
+** Conclusione
+I LinkedSignal semplificano la gestione di relazioni complesse tra stati, migliorando la reattività e la manutenibilità del codice.
+
+---
+
+* Signal Form (Novità dalla v18)
+
+** Introduzione
+I *Signal Form* sono una nuova funzionalità introdotta in Angular 18 che permette di gestire i form in modo reattivo utilizzando i Signal. Questo approccio è più semplice e performante rispetto ai form reattivi tradizionali.
+
+** Utilizzo di Signal Form
+Per creare un Signal Form, si utilizza la funzione ~signalForm~, che restituisce un oggetto reattivo per gestire lo stato del form.
+
+*** Esempio di Signal Form
+#+begin_src typescript
+import { signalForm } from '@angular/forms';
+
+const form = signalForm({
+  name: '',
+  email: '',
+});
+
+form.valueChanges.subscribe((value) => {
+  console.log('Form value changed:', value);
+});
+
+form.setValue({ name: 'John', email: 'john@example.com' });
+#+end_src
+
+** Conclusione
+I Signal Form offrono un approccio moderno e reattivo per gestire i form in Angular, migliorando le prestazioni e la semplicità del codice.
+
+---
+
+* HttpResource (Novità dalla v18)
+
+** Introduzione
+Gli *HttpResource* sono una nuova funzionalità introdotta in Angular 18 che semplifica la gestione delle richieste HTTP utilizzando i Signal. Questo approccio è più reattivo e integrato con il sistema di change detection di Angular.
+
+** Utilizzo di HttpResource
+Per creare un HttpResource, si utilizza la funzione ~httpResource~, che restituisce un oggetto reattivo per gestire le richieste HTTP.
+
+*** Esempio di HttpResource
+#+begin_src typescript
+import { httpResource } from '@angular/common/http';
+
+const resource = httpResource('https://api.example.com/data');
+
+resource.get().subscribe((data) => {
+  console.log('Data received:', data);
+});
+#+end_src
+
+** Conclusione
+Gli HttpResource semplificano la gestione delle richieste HTTP in Angular, migliorando la reattività e l'integrazione con il framework.
