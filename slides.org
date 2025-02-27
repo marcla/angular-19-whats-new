@@ -1255,7 +1255,7 @@ console.log(linkedSignal()); // Output: 10 (aggiornato automaticamente)
 ** Conclusione
 I LinkedSignal semplificano la gestione di relazioni complesse tra stati, migliorando la reattività e la manutenibilità del codice.
 
----
+-----
 
 * Signal Form (Novità dalla v18)
 
@@ -1284,7 +1284,7 @@ form.setValue({ name: 'John', email: 'john@example.com' });
 ** Conclusione
 I Signal Form offrono un approccio moderno e reattivo per gestire i form in Angular, migliorando le prestazioni e la semplicità del codice.
 
----
+-----
 
 * HttpResource (Novità dalla v18)
 
