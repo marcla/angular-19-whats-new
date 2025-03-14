@@ -849,6 +849,8 @@ La sintassi ~@let~ permette di definire una variabile all'interno di un blocco d
 
 * Signal in Angular
 
+- [[http://localhost:4200/signal][Playground]]
+
 ** Introduzione ai Signal
 
 Dalla versione *Angular 16*, è stato introdotto il concetto di *Signal*, una nuova API per la gestione dello stato reattivo. I Signal rappresentano un'alternativa più efficiente e prevedibile rispetto al tradizionale ~RxJS~, semplificando il tracking delle dipendenze e l'aggiornamento della UI.
@@ -986,15 +988,17 @@ I Signal rappresentano un'evoluzione significativa nella gestione dello stato in
 
 -----
 
-* Custom Event (Input & Output)
+* Custom Event (Input) - Transizione da @Input() a input()
+
+- [[http://localhost:4200/input-signal][Playground]]
 
 ** Introduzione
-In Angular, i componenti comunicano tra loro utilizzando gli *input* e gli *output*. Gli input permettono di passare dati da un componente padre a un componente figlio, mentre gli output permettono al componente figlio di emettere eventi che il componente padre può gestire. Questa comunicazione è fondamentale per creare applicazioni modulari e riutilizzabili.
+In Angular, la comunicazione tra componenti è tradizionalmente gestita attraverso gli *input* e gli *output*. Con l'introduzione dei **Signal** in Angular 16 e l'evoluzione delle API nelle versioni successive, Angular ha introdotto un nuovo approccio per gestire gli input basato sui Signal, che sostituisce o integra il classico decoratore ~@Input~. Questo capitolo esplora le differenze tra il vecchio approccio (~@Input~) e il nuovo approccio basato sui Signal (~input()~), evidenziando i vantaggi, le nuove proprietà come `required` e `transform`, e i casi d'uso.
 
-** Input
-Gli input sono proprietà di un componente che possono essere impostate dall'esterno, tipicamente dal componente padre. Per definire un input, si utilizza il decoratore ~@Input~.
+** Il vecchio approccio: @Input()
+Prima di Angular 17, gli input venivano dichiarati utilizzando il decoratore ~@Input~. Questo approccio è ancora valido, ma è meno integrato con il sistema reattivo di Angular basato sui Signal.
 
-*** Esempio di Input
+*** Esempio di @Input()
 #+begin_src typescript
 import { Component, Input } from '@angular/core';
 
@@ -1003,69 +1007,86 @@ import { Component, Input } from '@angular/core';
   template: `<p>{{ message }}</p>`,
 })
 export class ChildComponent {
-  @Input() message: string = ''; // Input che riceve un messaggio
+  @Input() message: string = ''; // Input tradizionale
 }
 #+end_src
 
-*** Utilizzo nel componente padre
+*** Limitazioni di @Input()
+
+- *Mancanza di reattività:* Gli input tradizionali non sono reattivi di default. Se il valore cambia, il componente non viene automaticamente aggiornato a meno che non si utilizzi il change detection.
+- *Verbosità:* Richiede l'uso di decoratori e non è integrato con i Signal.
+
+** Il nuovo approccio: input() basato su Signal
+
+A partire da Angular 17, è possibile utilizzare la funzione ~input()~ per dichiarare input reattivi basati sui Signal. Questo approccio è più moderno, reattivo e integrato con il sistema di change detection di Angular. Inoltre, introduce nuove proprietà come `required` e `transform`.
+
+*** Esempio di input()
 #+begin_src typescript
-import { Component } from '@angular/core';
-
-@Component({
-  selector: 'app-parent',
-  template: `
-    <app-child [message]="parentMessage"></app-child>
-  `,
-})
-export class ParentComponent {
-  parentMessage = 'Hello from parent!';
-}
-#+end_src
-
-** Output
-Gli output permettono a un componente figlio di emettere eventi che il componente padre può gestire. Per definire un output, si utilizza il decoratore ~@Output~ insieme a un ~EventEmitter~.
-
-*** Esempio di Output
-#+begin_src typescript
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'app-child',
-  template: `
-    <button (click)="sendMessage()">Send Message</button>
-  `,
+  template: `<p>{{ message() }}</p>`,
 })
 export class ChildComponent {
-  @Output() messageEvent = new EventEmitter<string>();
-
-  sendMessage() {
-    this.messageEvent.emit('Hello from child!');
-  }
+  message = input<string>(''); // Input basato su Signal
 }
 #+end_src
 
-*** Utilizzo nel componente padre
+*** Vantaggi di input()
+- *Reattività integrata:* Gli input basati su Signal sono reattivi di default. Ogni cambiamento nel valore dell'input viene propagato automaticamente al componente.
+- *Sintassi più semplice:* Non è necessario utilizzare decoratori, rendendo il codice più conciso.
+- *Integrazione con i Signal:* Gli input basati su Signal possono essere facilmente combinati con altri Signal o computed values.
+- *Proprietà avanzate:* Supporta proprietà come `required` e `transform`.
+
+** Proprietà avanzate degli input Signal
+
+*** required
+La proprietà `required` permette di dichiarare che un input è obbligatorio. Se il valore non viene fornito, Angular genererà un errore in fase di compilazione.
+
+*** Esempio di input() con required
 #+begin_src typescript
-import { Component } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 @Component({
-  selector: 'app-parent',
-  template: `
-    <app-child (messageEvent)="receiveMessage($event)"></app-child>
-    <p>{{ receivedMessage }}</p>
-  `,
+  selector: 'app-child',
+  template: `<p>{{ message() }}</p>`,
 })
-export class ParentComponent {
-  receivedMessage = '';
-
-  receiveMessage(message: string) {
-    this.receivedMessage = message;
-  }
+export class ChildComponent {
+  message = input.required<string>(); // Input obbligatorio
 }
 #+end_src
 
+*** transform
+La proprietà `transform` permette di applicare una trasformazione al valore dell'input prima che venga utilizzato nel componente. Questo è utile per convertire o validare i dati in ingresso.
+
+*** Esempio di input() con transform
+#+begin_src typescript
+import { Component, input } from '@angular/core';
+
+@Component({
+  selector: 'app-child',
+  template: `<p>{{ message() }}</p>`,
+})
+export class ChildComponent {
+  message = input('', {
+    transform: (value: string | null) => value?.toUpperCase() ?? 'DEFAULT', // Trasforma il valore in maiuscolo
+  });
+}
+#+end_src
+
+** Confronto tra @Input() e input()
+| Caratteristica               | @Input()                  | input()                   |
+|------------------------------|--------------------------|--------------------------|
+| *Reattività*                 | No                       | Sì                       |
+| *Sintassi*                   | Decoratore (~@Input~)    | Funzione (~input()~)     |
+| *Integrazione con Signal*    | No                       | Sì                       |
+| *Change Detection*           | Richiede change detection| Automatico               |
+| *Proprietà avanzate*         | No                       | Sì (required, transform) |
+
 ** Conclusione
-Gli input e gli output sono strumenti essenziali per la comunicazione tra componenti in Angular. Con gli input, i componenti possono ricevere dati dall'esterno, mentre con gli output possono emettere eventi per notificare cambiamenti o azioni.
+
+La transizione da ~@Input()~ a ~input()~ rappresenta un'evoluzione significativa nella gestione degli input in Angular. Gli input basati su Signal offrono maggiore reattività, una sintassi più semplice, una migliore integrazione con il sistema di change detection e nuove proprietà avanzate come `required` e `transform`. Tuttavia, gli output rimangono basati su ~@Output~ e ~EventEmitter~, in attesa di future evoluzioni del framework.
 
 -----
 
