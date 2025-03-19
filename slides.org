@@ -988,61 +988,69 @@ I Signal rappresentano un'evoluzione significativa nella gestione dello stato in
 
 -----
 
-* Custom Event (Input) - Transizione da @Input() a input()
+* Custom Event (Input & Output)
 
 - [[http://localhost:4200/input-signal][Playground]]
 
 ** Introduzione
-In Angular, la comunicazione tra componenti è tradizionalmente gestita attraverso gli *input* e gli *output*. Con l'introduzione dei **Signal** in Angular 16 e l'evoluzione delle API nelle versioni successive, Angular ha introdotto un nuovo approccio per gestire gli input basato sui Signal, che sostituisce o integra il classico decoratore ~@Input~. Questo capitolo esplora le differenze tra il vecchio approccio (~@Input~) e il nuovo approccio basato sui Signal (~input()~), evidenziando i vantaggi, le nuove proprietà come `required` e `transform`, e i casi d'uso.
+In Angular, la comunicazione tra componenti è tradizionalmente gestita attraverso gli *input* e gli *output*. Con l'introduzione dei *Signal* in Angular 16 e l'evoluzione delle API nelle versioni successive, Angular ha introdotto un nuovo approccio per gestire gli input basato sui Signal, che sostituisce o integra il classico decoratore ~@Input~. Allo stesso modo, dalla versione 17, anche la gestione degli *output* ha visto un'evoluzione, introducendo la funzione ~output()~ che semplifica l'emissione di eventi.
 
-** Il vecchio approccio: @Input()
-Prima di Angular 17, gli input venivano dichiarati utilizzando il decoratore ~@Input~. Questo approccio è ancora valido, ma è meno integrato con il sistema reattivo di Angular basato sui Signal.
+** Il vecchio approccio: @Input() e @Output()
+Prima di Angular 17, gli input venivano dichiarati utilizzando il decoratore ~@Input~ e gli output con il decoratore ~@Output~. Questo approccio è ancora valido, ma è meno integrato con il sistema reattivo di Angular basato sui Signal.
 
-*** Esempio di @Input()
+*** Esempio di @Input() e @Output()
 #+begin_src typescript
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-child',
-  template: `<p>{{ message }}</p>`,
+  template: `
+    <p>{{ message }}</p>
+    <button (click)="notify.emit()">Notifica</button>
+  `,
 })
 export class ChildComponent {
   @Input() message: string = ''; // Input tradizionale
+  @Output() notify = new EventEmitter<void>(); // Output tradizionale
 }
 #+end_src
 
-*** Limitazioni di @Input()
+*** Limitazioni di @Input() e @Output()
+- *Mancanza di reattività negli input:* Gli input tradizionali non sono reattivi di default. Se il valore cambia, il componente non viene automaticamente aggiornato a meno che non si utilizzi il change detection.
+- *Verbosità:* Richiede l'uso di decoratori e di ~EventEmitter~ per la gestione degli eventi.
 
-- *Mancanza di reattività:* Gli input tradizionali non sono reattivi di default. Se il valore cambia, il componente non viene automaticamente aggiornato a meno che non si utilizzi il change detection.
-- *Verbosità:* Richiede l'uso di decoratori e non è integrato con i Signal.
+** Il nuovo approccio: input() e output() basati su Signal
+A partire da Angular 17, è possibile utilizzare la funzione ~input()~ per dichiarare input reattivi basati sui Signal e la funzione ~output()~ per semplificare l'emissione di eventi.
 
-** Il nuovo approccio: input() basato su Signal
-
-A partire da Angular 17, è possibile utilizzare la funzione ~input()~ per dichiarare input reattivi basati sui Signal. Questo approccio è più moderno, reattivo e integrato con il sistema di change detection di Angular. Inoltre, introduce nuove proprietà come `required` e `transform`.
-
-*** Esempio di input()
+*** Esempio di input() e output()
 #+begin_src typescript
-import { Component, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 
 @Component({
   selector: 'app-child',
-  template: `<p>{{ message() }}</p>`,
+  template: `
+    <p>{{ message() }}</p>
+    <button (click)="notify()">Notifica</button>
+  `,
 })
 export class ChildComponent {
   message = input<string>(''); // Input basato su Signal
+  notify = output<void>(); // Output semplificato
 }
 #+end_src
 
-*** Vantaggi di input()
+*** Vantaggi di input() e output()
 - *Reattività integrata:* Gli input basati su Signal sono reattivi di default. Ogni cambiamento nel valore dell'input viene propagato automaticamente al componente.
 - *Sintassi più semplice:* Non è necessario utilizzare decoratori, rendendo il codice più conciso.
 - *Integrazione con i Signal:* Gli input basati su Signal possono essere facilmente combinati con altri Signal o computed values.
-- *Proprietà avanzate:* Supporta proprietà come `required` e `transform`.
+- *Output semplificati:* Non è più necessario creare un ~EventEmitter~, poiché ~output()~ gestisce direttamente l'emissione degli eventi.
+- *Proprietà avanzate:* Supporta proprietà come ~required~ e ~transform~ per gli input.
 
 ** Proprietà avanzate degli input Signal
 
 *** required
-La proprietà `required` permette di dichiarare che un input è obbligatorio. Se il valore non viene fornito, Angular genererà un errore in fase di compilazione.
+
+La proprietà ~required~ permette di dichiarare che un input è obbligatorio. Se il valore non viene fornito, Angular genererà un errore in fase di compilazione.
 
 *** Esempio di input() con required
 #+begin_src typescript
@@ -1058,7 +1066,8 @@ export class ChildComponent {
 #+end_src
 
 *** transform
-La proprietà `transform` permette di applicare una trasformazione al valore dell'input prima che venga utilizzato nel componente. Questo è utile per convertire o validare i dati in ingresso.
+
+La proprietà ~transform~ permette di applicare una trasformazione al valore dell'input prima che venga utilizzato nel componente. Questo è utile per convertire o validare i dati in ingresso.
 
 *** Esempio di input() con transform
 #+begin_src typescript
@@ -1075,67 +1084,132 @@ export class ChildComponent {
 }
 #+end_src
 
-** Confronto tra @Input() e input()
-| Caratteristica               | @Input()                  | input()                   |
+** Confronto tra @Input()/@Output() e input()/output()
+
+| *Caratteristica*             | *@Input()*      | *input()*        |
 |------------------------------|--------------------------|--------------------------|
 | *Reattività*                 | No                       | Sì                       |
-| *Sintassi*                   | Decoratore (~@Input~)    | Funzione (~input()~)     |
+| *Sintassi*                   | Decoratori               | Funzioni                 |
 | *Integrazione con Signal*    | No                       | Sì                       |
 | *Change Detection*           | Richiede change detection| Automatico               |
-| *Proprietà avanzate*         | No                       | Sì (required, transform) |
+| *Proprietà avanzate*         | No                       | Sì (~required~, ~transform~)  |
+
+| *Caratteristica*             | *@Output()*      | *output()*        |
+|------------------------------|--------------------------|--------------------------|
+| *Reattività*                 | No                       | Sì                       |
+| *Sintassi*                   | Decoratori               | Funzioni                 |
+| *Integrazione con Signal*    | No                       | No                       |
+| *Output semplificati*        | No, usa EventEmitter     | Sì, ~output()~ gestisce l'evento |
+| *Proprietà avanzate*         | No                       | Sì (~alias~)  |
 
 ** Conclusione
-
-La transizione da ~@Input()~ a ~input()~ rappresenta un'evoluzione significativa nella gestione degli input in Angular. Gli input basati su Signal offrono maggiore reattività, una sintassi più semplice, una migliore integrazione con il sistema di change detection e nuove proprietà avanzate come `required` e `transform`. Tuttavia, gli output rimangono basati su ~@Output~ e ~EventEmitter~, in attesa di future evoluzioni del framework.
+La transizione da ~@Input()~ a ~input()~ e da ~@Output()~ a ~output()~ rappresenta un'evoluzione significativa nella gestione della comunicazione tra componenti in Angular. Gli input basati su Signal offrono maggiore reattività, una sintassi più semplice, una migliore integrazione con il sistema di change detection e nuove proprietà avanzate come ~required~ e ~transform~. Allo stesso modo, la funzione ~output()~ semplifica la gestione degli eventi eliminando la necessità di utilizzare ~EventEmitter~, rendendo il codice più pulito e conciso.
 
 -----
 
 * Two-Way Binding con Model Inputs (Novità dalla v17)
 
+- [[https://angular.dev/guide/templates/two-way-binding][Guida ufficiale Angular]]
+# - [[][Playground]]
+
 ** Introduzione
-Angular 17 introduce una nuova funzionalità chiamata *Model Inputs*, che semplifica il two-way binding senza dover utilizzare la sintassi ~[(ngModel)]~. Questa funzionalità è particolarmente utile per sincronizzare lo stato tra un componente padre e un componente figlio in modo più intuitivo.
+Angular 17 introduce una nuova funzionalità chiamata *Model Inputs*, che semplifica il two-way binding senza dover utilizzare la sintassi ~[(ngModel)]~. Questa funzionalità è particolarmente utile per sincronizzare lo stato tra un componente padre e un componente figlio in modo più intuitivo e integrato con i Signal.
 
 ** Utilizzo di Model Inputs
-Per utilizzare i Model Inputs, è sufficiente definire una proprietà con il decoratore ~@Model~ nel componente figlio. Questo permette di sincronizzare automaticamente il valore tra il componente padre e il componente figlio.
+Per utilizzare i Model Inputs, è sufficiente definire una proprietà con la funzione ~model()~ nel componente figlio. Questo permette di sincronizzare automaticamente il valore tra il componente padre e il componente figlio.
 
-*** Esempio di Model Input
+** Confronto con il vecchio approccio
+
+Prima di Angular 17, il two-way binding richiedeva l’utilizzo di ~@Input()~ e ~@Output()~. Il nuovo approccio semplifica notevolmente il codice.
+
+*** Vecchio approccio con ~@Input()~ e ~@Output()~
+#+begin_src typescript
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+
+@Component({
+  selector: 'app-counter',
+  template: `
+    <div>
+      <button (click)="countChange.emit(count - 1)">-</button>
+      <span>{{ count }}</span>
+      <button (click)="countChange.emit(count + 1)">+</button>
+    </div>
+  `,
+})
+export class CounterComponent {
+  @Input() count: number = 0;
+  @Output() countChange = new EventEmitter<number>();
+}
+#+end_src
+
+*** Nuovo approccio con ~model()~
 #+begin_src typescript
 import { Component, model } from '@angular/core';
 
 @Component({
-  selector: 'app-child',
+  selector: 'app-counter',
   template: `
-    <input [ngModel]="value()" (ngModelChange)="value.set($event)" />
+    <div>
+      <button (click)="count.set(count() - 1)">-</button>
+      <span>{{ count() }}</span>
+      <button (click)="count.set(count() + 1)">+</button>
+    </div>
   `,
 })
-export class ChildComponent {
-  value = model<string>(); // Model Input per il two-way binding
+export class CounterComponent {
+  count = model<number>(0);
 }
 #+end_src
 
-*** Utilizzo nel componente padre
+** Esempio di Counter con Model Input
+
+*** Componente Padre (ParentComponent)
 #+begin_src typescript
 import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-parent',
   template: `
-    <app-child [(value)]="parentValue"></app-child>
-    <p>Valore nel padre: {{ parentValue }}</p>
+    <h1>Counter: {{ parentCount }}</h1>
+    <app-counter [(count)]="parentCount"></app-counter>
   `,
 })
 export class ParentComponent {
-  parentValue = 'Hello from parent!';
+  parentCount = 0;
+}
+#+end_src
+
+*** Componente Figlio (ChildComponent)
+#+begin_src typescript
+import { Component, model } from '@angular/core';
+
+@Component({
+  selector: 'app-counter',
+  template: `
+    <div>
+      <button (click)="updateCount(-1)">-</button>
+      <span>{{ count() }}</span>
+      <button (click)="updateCount(+1)">+</button>
+    </div>
+  `,
+})
+export class CounterComponent {
+  count = model<number>(0); // Model Input per il two-way binding
+
+  updateCount(amount: number): void {
+    this.count.update(currentCount => currentCount + amount);
+  }
 }
 #+end_src
 
 ** Vantaggi
-- *Sintassi semplificata:* Elimina la necessità di utilizzare ~[(ngModel)]~ per il two-way binding.
+- *Sintassi semplificata:* Elimina la necessità di utilizzare ~@Input()~ e ~@Output()~ per il two-way binding.
 - *Maggiore chiarezza:* Il codice è più leggibile e intuitivo.
 - *Integrazione con i Signal:* I Model Inputs funzionano perfettamente con i Signal.
+- *Gestione più semplice dei valori iniziali:* I valori iniziali possono essere passati direttamente al ~model()~.
 
 ** Conclusione
-I Model Inputs rappresentano un'evoluzione del two-way binding in Angular, rendendo la sincronizzazione tra componenti più semplice e moderna.
+I Model Inputs rappresentano un'evoluzione del two-way binding in Angular, rendendo la sincronizzazione tra componenti più semplice e moderna. Il passaggio dal vecchio approccio con ~@Input()~ e ~@Output()~ a ~model()~ semplifica il codice, riducendo la verbosità e migliorando la leggibilità complessiva.
 
 -----
 
