@@ -847,6 +847,16 @@ La sintassi ~@let~ permette di definire una variabile all'interno di un blocco d
 
 -----
 
+* Template literals (Angular 19.2)
+
+TODO
+
+- [[https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals][MDN]]
+# - [[TODO][Guida ufficiale Angular]]
+# - [[][Playground]]
+
+-----
+
 * Signal in Angular
 
 - [[http://localhost:4200/signal][Playground]]
