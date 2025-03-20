@@ -1215,13 +1215,16 @@ I Model Inputs rappresentano un'evoluzione del two-way binding in Angular, rende
 
 * View Queries (ViewChild / ViewChildren)
 
+- [[https://angular.dev/guide/components/queries][Guida ufficiale Angular]]
+# - [[][Playground]]
+
 ** Introduzione
-Le *view queries* permettono di accedere a elementi del DOM o a componenti/direttive all'interno del template di un componente. Angular fornisce due decoratori per questo scopo: ~@ViewChild~ e ~@ViewChildren~.
+Le *view queries* permettono di accedere a elementi del DOM o a componenti/direttive all'interno del template di un componente. Angular fornisce due approcci per questo scopo: i decoratori ~@ViewChild~ e ~@ViewChildren~, e l'uso dei ~Signal Queries~ introdotti di recente.
 
 ** ViewChild
 Il decoratore ~@ViewChild~ permette di ottenere un riferimento a un singolo elemento, componente o direttiva nel template.
 
-*** Esempio di ViewChild
+*** Esempio di ViewChild con Decoratori
 #+begin_src typescript
 import { Component, ViewChild, AfterViewInit } from '@angular/core';
 
@@ -1240,10 +1243,34 @@ export class ParentComponent implements AfterViewInit {
 }
 #+end_src
 
+*** Esempio di ViewChild con Signals
+#+begin_src typescript
+import { Component, viewChild } from '@angular/core';
+
+@Component({
+  selector: 'app-parent',
+  template: `
+    <app-child #child></app-child>
+  `,
+})
+export class ParentComponent {
+  childComponent = viewChild('child');
+
+  constructor() {
+    // childComponent sarà undefined finché il componente non sarà inizializzato
+    console.log(this.childComponent()); // undefined
+  }
+
+  ngAfterViewInit() {
+    console.log(this.childComponent()); // Accesso al componente figlio
+  }
+}
+#+end_src
+
 ** ViewChildren
 Il decoratore ~@ViewChildren~ permette di ottenere un riferimento a più elementi, componenti o direttive nel template.
 
-*** Esempio di ViewChildren
+*** Esempio di ViewChildren con Decoratori
 #+begin_src typescript
 import { Component, ViewChildren, QueryList, AfterViewInit } from '@angular/core';
 
@@ -1265,20 +1292,48 @@ export class ParentComponent implements AfterViewInit {
 }
 #+end_src
 
+*** Esempio di ViewChildren con Signals
+#+begin_src typescript
+import { Component, viewChildren } from '@angular/core';
+
+@Component({
+  selector: 'app-parent',
+  template: `
+    <app-child></app-child>
+    <app-child></app-child>
+  `,
+})
+export class ParentComponent {
+  childComponents = viewChildren(ChildComponent);
+
+  ngAfterViewInit() {
+    this.childComponents().forEach((child) => {
+      console.log(child); // Accesso a tutti i componenti figli
+    });
+  }
+}
+#+end_src
+
+** Differenze e Vantaggi
+
+- *Reattività*: L'uso dei signals consente di sfruttare la reattività di Angular, aggiornando automaticamente le view queries al mutare dei riferimenti, senza necessità di lifecycle hooks come ~ngAfterViewInit~.
+- *Sintassi più semplice*: Con ~viewChild~ e ~viewChildren~ si evita la necessità di decoratori e di gestione esplicita del ciclo di vita, riducendo il boilerplate.
+- *Compatibilità*: I decoratori offrono ancora vantaggi in situazioni in cui si necessita di opzioni avanzate come ~{ static: true }~, utili per l'accesso a elementi già presenti all'inizializzazione del componente.
+
 ** Conclusione
-Le view queries sono uno strumento potente per interagire con elementi del DOM o componenti direttamente dal codice TypeScript. ~@ViewChild~ è utile per riferimenti singoli, mentre ~@ViewChildren~ è ideale per gestire più elementi.
+I ~Signal Queries~ rappresentano un'evoluzione che semplifica il codice e introduce reattività nelle view queries. Tuttavia, i decoratori rimangono utili per scenari complessi che richiedono un controllo più fine del ciclo di vita.
 
 -----
 
 * Content Queries (ContentChild / ContentChildren)
 
 ** Introduzione
-Le *content queries* permettono di accedere a elementi o componenti proiettati all'interno di un componente utilizzando ~<ng-content>~. Angular fornisce due decoratori per questo scopo: ~@ContentChild~ e ~@ContentChildren~.
+Le *content queries* permettono di accedere a elementi o componenti proiettati all'interno di un componente utilizzando ~<ng-content>~. Angular fornisce due approcci per questo scopo: i decoratori ~@ContentChild~ e ~@ContentChildren~, e l'uso dei ~Signal Queries~.
 
 ** ContentChild
 Il decoratore ~@ContentChild~ permette di ottenere un riferimento a un singolo elemento o componente proiettato.
 
-*** Esempio di ContentChild
+*** Esempio di ContentChild con Decoratori
 #+begin_src typescript
 import { Component, ContentChild, AfterContentInit } from '@angular/core';
 
@@ -1297,10 +1352,34 @@ export class ParentComponent implements AfterContentInit {
 }
 #+end_src
 
+*** Esempio di ContentChild con Signals
+#+begin_src typescript
+import { Component, contentChild } from '@angular/core';
+
+@Component({
+  selector: 'app-parent',
+  template: `
+    <ng-content></ng-content>
+  `,
+})
+export class ParentComponent {
+  projectedElement = contentChild('projectedContent');
+
+  constructor() {
+    // projectedElement sarà undefined finché il contenuto non sarà inizializzato
+    console.log(this.projectedElement()); // undefined
+  }
+
+  ngAfterContentInit() {
+    console.log(this.projectedElement()); // Accesso all'elemento proiettato
+  }
+}
+#+end_src
+
 ** ContentChildren
 Il decoratore ~@ContentChildren~ permette di ottenere un riferimento a più elementi o componenti proiettati.
 
-*** Esempio di ContentChildren
+*** Esempio di ContentChildren con Decoratori
 #+begin_src typescript
 import { Component, ContentChildren, QueryList, AfterContentInit } from '@angular/core';
 
@@ -1311,7 +1390,7 @@ import { Component, ContentChildren, QueryList, AfterContentInit } from '@angula
   `,
 })
 export class ParentComponent implements AfterContentInit {
-  @ContentChildren(ChildComponent) projectedComponents!: QueryList<ChildComponent>;
+  @ContentChildren(ChildComponent, { descendants: true }) projectedComponents!: QueryList<ChildComponent>;
 
   ngAfterContentInit() {
     this.projectedComponents.forEach((child) => {
@@ -1321,8 +1400,29 @@ export class ParentComponent implements AfterContentInit {
 }
 #+end_src
 
+*** Esempio di ContentChildren con Signals
+#+begin_src typescript
+import { Component, contentChildren } from '@angular/core';
+
+@Component({
+  selector: 'app-parent',
+  template: `
+    <ng-content></ng-content>
+  `,
+})
+export class ParentComponent {
+  projectedComponents = contentChildren(ChildComponent);
+}
+#+end_src
+
+** Differenze e Vantaggi
+
+- *Reattività*: Come per le view queries, i signals permettono l'aggiornamento automatico del riferimento a elementi proiettati senza bisogno di lifecycle hooks.
+- *Sintassi più concisa*: L’uso dei ~contentChild~ e ~contentChildren~ riduce il boilerplate.
+- *Limitazioni*: A differenza dei decoratori, le Signal Queries non offrono ancora un’opzione equivalente a ~{ descendants: true }~, che permette di selezionare anche gli elementi nidificati.
+
 ** Conclusione
-Le content queries sono utili per interagire con contenuti proiettati all'interno di un componente. ~@ContentChild~ è adatto per riferimenti singoli, mentre ~@ContentChildren~ è ideale per gestire più elementi.
+I ~Signal Queries~ offrono un modo più elegante e reattivo di lavorare con i contenuti proiettati, riducendo la necessità di lifecycle hooks e rendendo il codice più conciso. Tuttavia, i decoratori rimangono una scelta valida quando serve un controllo più dettagliato, specialmente in contesti complessi dove è necessario selezionare elementi discendenti con l’opzione ~{ descendants: true }~.
 
 -----
 
