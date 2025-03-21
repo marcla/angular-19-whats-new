@@ -1436,29 +1436,70 @@ I ~Signal Queries~ offrono un modo più elegante e reattivo di lavorare con i co
 
 -----
 
-* LinkedSignal (Novità dalla v18)
+* Linked Signal (Novità dalla v19)
 
 ** Introduzione
-I *LinkedSignal* sono una nuova funzionalità introdotta in Angular 18 che permette di creare Signal collegati tra loro. Quando un Signal cambia, tutti i Signal collegati vengono aggiornati automaticamente. Questo è utile per gestire relazioni complesse tra stati in modo reattivo.
+I *Linked Signal* sono una nuova funzionalità introdotta in Angular 19 che permette di creare Signal collegati tra loro, mantenendo una relazione automatica tra stati derivati. Quando il Signal sorgente cambia, tutti i Signal collegati vengono aggiornati automaticamente. Questo è utile per gestire relazioni complesse tra stati in modo reattivo, riducendo la necessità di scrivere codice boilerplate per sincronizzare i valori.
 
 ** Utilizzo di LinkedSignal
-Per creare un LinkedSignal, si utilizza la funzione ~linkedSignal~, che collega due o più Signal.
+Per creare un Linked Signal si utilizza la funzione ~linkedSignal~. Questa funzione prende uno o più Signal di input e una funzione che calcola il valore derivato in base a essi.
 
-*** Esempio di LinkedSignal
+*** Esempio di Linked Signal
 #+begin_src typescript
 import { signal, linkedSignal } from '@angular/core';
 
-const sourceSignal = signal(0);
-const linkedSignal = linkedSignal(sourceSignal, (value) => value * 2);
+const basePrice = signal(100);
+const taxRate = signal(0.2);
 
-console.log(linkedSignal()); // Output: 0
+// Linked Signal che calcola il prezzo totale includendo le tasse
+const totalPrice = linkedSignal({
+  source: () => ({ price: this.basePrice, tax: this.taxRate }),
+  computation: (source, previous) => source.price * (1 + source.tax)
+});
 
-sourceSignal.set(5);
-console.log(linkedSignal()); // Output: 10 (aggiornato automaticamente)
+console.log(totalPrice()); // Output: 120
+
+// Modifica il prezzo base
+basePrice.set(200);
+console.log(totalPrice()); // Output: 240 (aggiornato automaticamente)
+
+// Modifica l'aliquota fiscale
+taxRate.set(0.1);
+console.log(totalPrice()); // Output: 220 (aggiornato automaticamente)
+
+// Modifica il prezzo totale
+totalPrice.set(456);
+console.log(totalPrice()); // Output: 456
 #+end_src
 
+** Differenze con ~computed~ ed ~effect~
+
+Sebbene i *Linked Signal* possano sembrare simili ai metodi ~computed~ ed ~effect~, hanno scopi diversi:
+
+- ~computed~: Crea un Signal derivato che viene ricalcolato ogni volta che i Signal di cui dipende cambiano. Tuttavia, il suo valore può essere solo letto e non scritto.
+  - *Esempio*:
+    #+begin_src typescript
+    const basePrice = signal(100);
+    const totalPrice = computed(() => basePrice() * 1.2);
+
+    console.log(totalPrice()); // Output: 120
+
+    totalPrice.set(200) // Output: Errore!
+    #+end_src
+
+- ~effect~: Serve per eseguire side effect (effetti collaterali) quando uno o più Signal cambiano. Non restituisce alcun valore, ed è utile per eseguire operazioni come il logging o l’aggiornamento di componenti esterni.
+  - *Esempio*:
+    #+begin_src typescript
+    const count = signal(0);
+    effect(() => console.log(`Count: ${count()}`));
+
+    count.set(1); // Stampa: "Count: 1"
+    #+end_src
+
+- ~linkedSignal~: A differenza di ~computed~, calcola e aggiorna immediatamente il suo valore ogni volta che uno dei Signal di input cambia, e può ricevere più Signal in ingresso. Questo lo rende particolarmente utile quando si ha bisogno di un valore reattivo che si aggiorni automaticamente e immediatamente, senza dipendere da un accesso esplicito come avviene con ~computed~.
+
 ** Conclusione
-I LinkedSignal semplificano la gestione di relazioni complesse tra stati, migliorando la reattività e la manutenibilità del codice.
+I *Linked Signal* semplificano la gestione di relazioni complesse tra stati, migliorando la reattività e la manutenibilità del codice. Non sostituiscono completamente né gli ~effect~ né i ~computed~, ma forniscono uno strumento aggiuntivo per costruire logiche reattive in modo più chiaro e conciso. La scelta tra ~linkedSignal~, ~computed~ ed ~effect~ dipende dallo scenario: usa ~linkedSignal~ quando vuoi mantenere uno stato derivato aggiornato automaticamente non appena cambiano i suoi Signal sorgente.
 
 -----
 
