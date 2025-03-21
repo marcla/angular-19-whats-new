@@ -9,7 +9,7 @@ import { ViewChildrenComponent } from './view-children.component';
     <app-view-child />
 
     @if (hide) {
-    <app-view-children />
+      <app-view-children />
     }
   `,
 })

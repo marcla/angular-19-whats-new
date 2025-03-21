@@ -847,7 +847,7 @@ La sintassi ~@let~ permette di definire una variabile all'interno di un blocco d
 
 -----
 
-* Template literals (Angular 19.2)
+* Template literals (Novità dalla v19.2)
 
 TODO
 
@@ -1324,15 +1324,11 @@ export class ParentComponent {
 }
 #+end_src
 
-** Opzioni
-
-I decoratori tuttavia offrono ancora vantaggi in situazioni in cui si necessita di opzioni avanzate come ad esempio ~{ static: true }~, utili per l'accesso a elementi già presenti all'inizializzazione del componente.
-L'uso di ~viewChild~ e ~viewChildren~ permette l'uso di altre opzioni come ad esempio ~~
-
 ** Differenze e Vantaggi
 
 - *Reattività*: L'uso dei signals consente di sfruttare la reattività di Angular, aggiornando automaticamente le view queries al mutare dei riferimenti, senza necessità di lifecycle hooks come ~ngAfterViewInit~.
 - *Sintassi più semplice*: Con ~viewChild~ e ~viewChildren~ si evita la necessità di decoratori e di gestione esplicita del ciclo di vita, riducendo il boilerplate.
+- *Limitazioni*: I decoratori tuttavia offrono ancora vantaggi in situazioni in cui si necessita di opzioni avanzate come ad esempio ~{ static: true }~, utili per l'accesso a elementi già presenti all'inizializzazione del componente.
 
 ** Conclusione
 I ~Signal Queries~ rappresentano un'evoluzione che semplifica il codice e introduce reattività nelle view queries. Tuttavia, i decoratori rimangono utili per scenari complessi che richiedono un controllo più fine del ciclo di vita.

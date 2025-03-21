@@ -26,7 +26,7 @@ export class TaskStoreService {
 
     <ul>
       @for (item of tasks; track $index) {
-      <li>{{ item.description }}</li>
+        <li>{{ item.description }}</li>
       }
     </ul>
 
