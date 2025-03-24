@@ -849,11 +849,49 @@ La sintassi ~@let~ permette di definire una variabile all'interno di un blocco d
 
 * Template literals (Novità dalla v19.2)
 
-TODO
-
 - [[https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals][MDN]]
 # - [[TODO][Guida ufficiale Angular]]
 # - [[][Playground]]
+
+
+
+
+** Esempio di base
+
+#+BEGIN_SRC typescript
+@Component({
+  selector: 'app-foo'
+  template: `
+    <ul
+      [attr.title]="user.name + ' ' + user.lastname"
+      title="{{ user.name }} + "" + {{ user.lastname }}"
+    >
+      <li>{{ user.name }}</li>
+      <li>{{ user.lastname }}</li>
+      <li>Descrizione: {{ user.name }} {{ user.lastname }} ({{ user.age }})</li>
+    </ul>
+  `,
+})
+export class FooComponent {
+  @Input() user: User;
+}
+#+END_SRC
+
+#+BEGIN_SRC typescript
+@Component({
+  selector: 'app-foo'
+  template: `
+    <ul title=`${user.name} ${user.lastname}`>
+      <li>{{ user.name }}</li>
+      <li>{{ user.lastname }}</li>
+      <li>{{ `Descrizione: ${user.name} ${user.lastname} (${user.age})` }}</li>
+    </ul>
+  `,
+})
+export class FooComponent {
+  @Input() user: User;
+}
+#+END_SRC
 
 -----
 
@@ -1532,10 +1570,10 @@ I Signal Form offrono un approccio moderno e reattivo per gestire i form in Angu
 
 -----
 
-* HttpResource (Novità dalla v18)
+* HttpResource (Novità dalla v19.2)
 
 ** Introduzione
-Gli *HttpResource* sono una nuova funzionalità introdotta in Angular 18 che semplifica la gestione delle richieste HTTP utilizzando i Signal. Questo approccio è più reattivo e integrato con il sistema di change detection di Angular.
+Gli *HttpResource* sono una nuova funzionalità introdotta in Angular 19.2 (*Experimental*) che semplifica la gestione delle richieste HTTP utilizzando i Signal. Questo approccio è più reattivo e integrato con il sistema di change detection di Angular.
 
 ** Utilizzo di HttpResource
 Per creare un HttpResource, si utilizza la funzione ~httpResource~, che restituisce un oggetto reattivo per gestire le richieste HTTP.
