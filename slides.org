@@ -853,8 +853,7 @@ La sintassi ~@let~ permette di definire una variabile all'interno di un blocco d
 # - [[TODO][Guida ufficiale Angular]]
 # - [[][Playground]]
 
-
-
+Dalla versione *Angular 19* è possibile utilizzare l'interpolazione delle stringhe tramite backtick all'interno del template del componente.
 
 ** Esempio di base
 
