@@ -474,12 +474,14 @@ Con l’introduzione delle nuove versioni di Angular, sono stati aggiunti nuovi 
 - *afterNextRender*: viene eseguito *solo una volta dopo il primo rendering del template*.
 - *DestroyRef*: una nuova API che semplifica la gestione della pulizia delle risorse senza dover implementare ~OnDestroy~.
 
-*Differenza tra afterRender e afterNextRender*
+** Differenza tra afterRender e afterNextRender
 
 *Definizione chiara*:
 
 - *afterRender* viene chiamato *dopo ogni rendering del template*, quindi può essere eseguito più volte durante il ciclo di vita del componente, ogni volta che Angular aggiorna il DOM in seguito a un cambiamento dello stato.
 - *afterNextRender* viene chiamato *solo una volta, dopo il primo rendering del template*, e non si ripete più per l’intero ciclo di vita del componente.
+
+[[./docs/during-initialization-lifecycle.png]]
 
 *Esempio pratico di afterRender e afterNextRender*:
 
