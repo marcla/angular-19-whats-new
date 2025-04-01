@@ -2,6 +2,12 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
+    path: 'lifecycle-hooks',
+    title: 'Lifecycle Hooks',
+    loadComponent: () =>
+      import('./features/lifecycle-hooks/lifecycle-hooks.component').then((c) => c.LifecycleHooksComponent),
+  },
+  {
     path: 'signal',
     title: 'signal()',
     loadComponent: () => import('./features/signal/page-signal.component').then((c) => c.PageSignalComponent),
