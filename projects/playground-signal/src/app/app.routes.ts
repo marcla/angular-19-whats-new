@@ -16,6 +16,11 @@ export const routes: Routes = [
       import('./features/lifecycle-hooks/lifecycle-hooks.component').then((c) => c.LifecycleHooksComponent),
   },
   {
+    path: 'deferred',
+    title: 'Deferred Loading',
+    loadComponent: () => import('./features/deferred/deferred.component').then((c) => c.DeferredComponent),
+  },
+  {
     path: 'signal',
     title: 'signal()',
     loadComponent: () => import('./features/signal/page-signal.component').then((c) => c.PageSignalComponent),

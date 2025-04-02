@@ -408,20 +408,20 @@ export class ExampleDirective {}
 
 A partire da Angular 17, è possibile *caricare dinamicamente i componenti in modo lazy* senza doverli dichiarare manualmente nei moduli o nei componenti host.
 
-*Perché usare il Lazy-Loading dei componenti?*
-- ✔ *Migliorare le performance* riducendo il bundle iniziale dell’app.
-- ✔ *Evitare dipendenze inutili* quando un componente non è sempre necessario.
-- ✔ *Caricare componenti solo quando servono*, ad esempio modali, tabelle avanzate o widget dinamici.
+** Perché usare il Lazy-Loading dei componenti?
+- ✔ *Migliora le performance* riducendo il bundle iniziale dell’app.
+- ✔ *Evita dipendenze inutili* quando un componente non è sempre necessario.
+- ✔ *Carica componenti solo quando servono*, ad esempio modali, tabelle avanzate o widget dinamici.
 
-Prima di Angular 17, per creare un componente dinamico si utilizzava =ViewContainerRef= e =ComponentFactoryResolver=, ma ora Angular fornisce un metodo più semplice ed efficiente.
+Prima di Angular 17, per creare un componente dinamico si utilizzava =ViewContainerRef= e =ComponentFactoryResolver=. Ora Angular fornisce un metodo più semplice ed efficiente.
 
 ** 🔹 Come caricare un componente in modo lazy
 Il metodo chiave è =import()=, che consente di caricare un componente solo quando richiesto.
 
-*✅ Esempio base: caricamento dinamico di un componente*
+*** ✅ Esempio base: caricamento dinamico di un componente
 Supponiamo di avere un *componente pesante*, ad esempio una tabella avanzata, che vogliamo caricare solo quando serve.
 
-Nel componente host, utilizziamo =ViewContainerRef= e il nuovo metodo =viewContainerRef.createComponent()=
+Nel componente host, utilizziamo =ViewContainerRef= e il nuovo metodo =viewContainerRef.createComponent()=.
 
 #+BEGIN_SRC typescript
 /* ↓ Il componente che verrà caricato lazy */
@@ -679,29 +679,31 @@ A partire da Angular 16, è possibile definire un *valore di default* per i bloc
 * Deferred Loading con @defer (Novità dalla v17)
 
 - [[https://angular.dev/guide/templates/defer][Guida ufficiale Angular]]
-# - [[][Playground]]
+- [[http://localhost:4200/deferred][Playground]]
 
 ** Introduzione
 
-Il deferred loading (caricamento differito) è una tecnica che consente di caricare parti di un'applicazione solo quando sono necessarie, migliorando le prestazioni iniziali. Angular introduce la direttiva ~@defer~ a partire dalla versione 17 per implementare facilmente questa funzionalità. Questa direttiva è particolarmente utile per ottimizzare il caricamento di componenti pesanti, moduli o risorse che non sono necessari immediatamente.
+Il deferred loading (caricamento differito) è una tecnica che consente di caricare parti di un'applicazione solo quando sono necessarie, migliorando le prestazioni iniziali.
+Angular introduce la direttiva ~@defer~ a partire dalla versione 17 per implementare facilmente questa funzionalità.
+Questa direttiva è particolarmente utile per ottimizzare il caricamento di componenti pesanti, moduli o risorse che non sono necessari immediatamente.
 
 ** Utilizzo di @defer
 
-La direttiva ~@defer~ permette di ritardare il caricamento di un blocco di template fino al verificarsi di una condizione specifica, come l'interazione dell'utente o il raggiungimento di un determinato stato.
+La direttiva ~@defer~ permette di ritardare il caricamento di un blocco di template fino al verificarsi di una condizione specifica,
+come l'interazione dell'utente o il raggiungimento di un determinato stato.
 
 *** Esempio base
 
 #+BEGIN_SRC html
-@defer {
-  @defer (on viewport) {
+@defer (on viewport) {
   <app-heavy-component></app-heavy-component>
 } @placeholder {
   <div>Caricamento in corso...</div>
 }
-}
 #+END_SRC
 
 *** Trigger disponibili
+
 Angular supporta diversi trigger per il caricamento differito:
 - ~on viewport~: Carica il contenuto quando entra nel viewport (ad esempio, quando l'utente scorre fino a quel punto).
 - ~on interaction~: Carica il contenuto quando l'utente interagisce con un elemento (ad esempio, un clic o un tocco).
@@ -762,7 +764,8 @@ Angular fornisce blocchi aggiuntivi per gestire gli stati del caricamento differ
 
 *** Prefetching delle risorse
 
-Angular supporta anche il prefetching delle risorse, che consente di caricare in anticipo i componenti o i moduli necessari, senza renderli immediatamente visibili. Questo è utile per migliorare l'esperienza utente quando si prevede che una risorsa sarà presto necessaria.
+Angular supporta anche il prefetching delle risorse, che consente di caricare in anticipo i componenti o i moduli necessari,
+senza renderli immediatamente visibili. Questo è utile per migliorare l'esperienza utente quando si prevede che una risorsa sarà presto necessaria.
 
 *Esempio:*
 
@@ -778,15 +781,15 @@ Angular supporta anche il prefetching delle risorse, che consente di caricare in
 
 1. *Componenti pesanti:*
    - Utilizzare ~@defer~ per caricare componenti complessi o pesanti solo quando sono visibili o necessari.
-   - Esempio: Caricare un grafico o una mappa solo quando l'utente scorre fino a quella sezione.
+   - *Esempio:* Caricare un grafico o una mappa solo quando l'utente scorre fino a quella sezione.
 
 2. *Moduli lazy-loaded:*
    - Combinare ~@defer~ con il lazy loading dei moduli per ottimizzare ulteriormente le prestazioni.
-   - Esempio: Caricare un modulo di amministrazione solo quando l'utente accede a quella sezione.
+   - *Esempio:* Caricare un modulo di amministrazione solo quando l'utente accede a quella sezione.
 
 3. *Risorse esterne:*
    - Utilizzare ~@defer~ per caricare risorse esterne, come video o immagini di grandi dimensioni, solo quando necessario.
-   - Esempio: Caricare un video solo quando l'utente interagisce con un pulsante di riproduzione.
+   - *Esempio:* Caricare un video solo quando l'utente interagisce con un pulsante di riproduzione.
 
 ** Vantaggi del Deferred Loading
 
