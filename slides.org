@@ -253,7 +253,7 @@ Con i componenti standalone, questo approccio cambia.
 * Directive Composition API e hostDirectives in Angular
 
 - [[https://angular.dev/guide/directives/directive-composition-api][Guida ufficiale Angular]]
-- [[https://stackblitz.com/edit/stackblitz-starters-jrxkcahg][Playground]]
+- [[http://localhost:4200/directive-composition][Playground]]
 
 A partire da Angular 16, è possibile comporre componenti e direttive in modo più modulare grazie alle *Directive Composition API*.
 
