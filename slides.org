@@ -252,7 +252,8 @@ Con i componenti standalone, questo approccio cambia.
 
 * Directive Composition API e hostDirectives in Angular
 
-- [[https://angular.dev/guide/directives/directive-composition-api][Guida ufficiale Angular]] - [[https://stackblitz.com/edit/stackblitz-starters-jrxkcahg][Playground]]
+- [[https://angular.dev/guide/directives/directive-composition-api][Guida ufficiale Angular]]
+- [[https://stackblitz.com/edit/stackblitz-starters-jrxkcahg][Playground]]
 
 A partire da Angular 16, è possibile comporre componenti e direttive in modo più modulare grazie alle *Directive Composition API*.
 
@@ -466,7 +467,7 @@ export class DashboardComponent {
 * Nuove Lifecycle Hooks in Angular: afterRender, afterNextRender e DestroyRef
 
 - [[https://angular.dev/guide/components/lifecycle#afterrender-and-afternextrender][Guida ufficiale Angular]]
-# - [[][Playground]]
+- [[http://localhost:4200/lifecycle-hooks][Playground]]
 
 Con l’introduzione delle nuove versioni di Angular, sono stati aggiunti nuovi lifecycle hooks che migliorano la gestione del rendering e della distruzione dei componenti. In particolare:
 

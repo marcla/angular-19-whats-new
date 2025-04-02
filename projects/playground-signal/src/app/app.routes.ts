@@ -2,6 +2,14 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
+    path: 'directive-composition',
+    title: 'Directive Composition Api',
+    loadComponent: () =>
+      import('./features/directive-composition/directive-composition.component').then(
+        (c) => c.DirectiveCompositionComponent
+      ),
+  },
+  {
     path: 'lifecycle-hooks',
     title: 'Lifecycle Hooks',
     loadComponent: () =>
