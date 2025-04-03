@@ -10,6 +10,11 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'lazy-loading',
+    title: 'Lazy-loading Components',
+    loadComponent: () => import('./features/lazy-loading/lazy-loading.component').then((c) => c.LazyLoadingComponent),
+  },
+  {
     path: 'lifecycle-hooks',
     title: 'Lifecycle Hooks',
     loadComponent: () =>

@@ -404,7 +404,7 @@ export class ExampleDirective {}
 * Lazy-loading Components
 
 - [[https://angular.dev/guide/components/programmatic-rendering#lazy-loading-components][Guida ufficiale Angular]]
-# - [[][Playground]]
+- [[http://localhost:4200/lazy-loading][Playground]]
 
 A partire da Angular 17, è possibile *caricare dinamicamente i componenti in modo lazy* senza doverli dichiarare manualmente nei moduli o nei componenti host.
 
