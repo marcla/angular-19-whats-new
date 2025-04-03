@@ -1546,6 +1546,31 @@ I *Linked Signal* semplificano la gestione di relazioni complesse tra stati, mig
 
 -----
 
+* HttpResource (Novità dalla v19.2)
+
+** Introduzione
+Gli *HttpResource* sono una nuova funzionalità introdotta in Angular 19.2 (*Experimental*) che semplifica la gestione delle richieste HTTP utilizzando i Signal. Questo approccio è più reattivo e integrato con il sistema di change detection di Angular.
+
+** Utilizzo di HttpResource
+Per creare un HttpResource, si utilizza la funzione ~httpResource~, che restituisce un oggetto reattivo per gestire le richieste HTTP.
+
+*** Esempio di HttpResource
+#+begin_src typescript
+import { httpResource } from '@angular/common/http';
+
+const resource = httpResource('https://api.example.com/data');
+
+resource.get().subscribe((data) => {
+  console.log('Data received:', data);
+});
+#+end_src
+
+** Conclusione
+Gli HttpResource semplificano la gestione delle richieste HTTP in Angular, migliorando la reattività e l'integrazione con il framework.
+
+#+BEGIN_COMMENT
+ -----
+
 * Signal Form (Novità dalla v18)
 
 ** Introduzione
@@ -1573,26 +1598,4 @@ form.setValue({ name: 'John', email: 'john@example.com' });
 ** Conclusione
 I Signal Form offrono un approccio moderno e reattivo per gestire i form in Angular, migliorando le prestazioni e la semplicità del codice.
 
------
-
-* HttpResource (Novità dalla v19.2)
-
-** Introduzione
-Gli *HttpResource* sono una nuova funzionalità introdotta in Angular 19.2 (*Experimental*) che semplifica la gestione delle richieste HTTP utilizzando i Signal. Questo approccio è più reattivo e integrato con il sistema di change detection di Angular.
-
-** Utilizzo di HttpResource
-Per creare un HttpResource, si utilizza la funzione ~httpResource~, che restituisce un oggetto reattivo per gestire le richieste HTTP.
-
-*** Esempio di HttpResource
-#+begin_src typescript
-import { httpResource } from '@angular/common/http';
-
-const resource = httpResource('https://api.example.com/data');
-
-resource.get().subscribe((data) => {
-  console.log('Data received:', data);
-});
-#+end_src
-
-** Conclusione
-Gli HttpResource semplificano la gestione delle richieste HTTP in Angular, migliorando la reattività e l'integrazione con il framework.
+#+END_COMMENT
