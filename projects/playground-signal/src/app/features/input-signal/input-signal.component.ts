@@ -17,8 +17,16 @@ class UserService {
     'Nicola Edmunds',
   ];
 
+  #previousIndex: number | null = null;
+
   getRandomUser(): string {
-    const pos = Math.floor(Math.random() * this.#list.length);
+    let pos: number;
+
+    do {
+      pos = Math.floor(Math.random() * this.#list.length);
+    } while (pos === this.#previousIndex);
+
+    this.#previousIndex = pos;
 
     return this.#list[pos];
   }
@@ -28,6 +36,7 @@ class UserService {
   imports: [AccountComponent],
   template: `<app-account [username]="username" />`,
   providers: [UserService],
+  // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InputSignalComponent {
   readonly #userService = inject(UserService);
@@ -37,6 +46,7 @@ export class InputSignalComponent {
   constructor() {
     setInterval(() => {
       this.username = this.#userService.getRandomUser();
+      console.log(`generate new user: ${this.username}`);
     }, 6000);
   }
 }

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 /**
  * - add power counter
@@ -10,7 +10,7 @@ import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
  * - add a setInterval
  */
 
-@Component({
+/* @Component({
   selector: 'app-signal-counter',
   template: `
     <p>Count: {{ count() }}</p>
@@ -30,7 +30,7 @@ export class SignalCounterComponent {
   reset() {
     this.count.set(0);
   }
-}
+} */
 
 @Component({
   selector: 'app-counter',
