@@ -1546,27 +1546,99 @@ I *Linked Signal* semplificano la gestione di relazioni complesse tra stati, mig
 
 -----
 
-* HttpResource (Novità dalla v19.2)
+* resource(), rxResource(), httpResource()
 
-** Introduzione
-Gli *HttpResource* sono una nuova funzionalità introdotta in Angular 19.2 (*Experimental*) che semplifica la gestione delle richieste HTTP utilizzando i Signal. Questo approccio è più reattivo e integrato con il sistema di change detection di Angular.
+A partire da Angular 19, sono state introdotte tre nuove API per gestire il caricamento asincrono dei dati in modo reattivo e idiomatico: `resource()`, `rxResource()` e `httpResource()`. Questi strumenti permettono di legare in modo naturale il caricamento dei dati alla UI, sfruttando i Signals e integrandosi perfettamente con `@defer`.
 
-** Utilizzo di HttpResource
-Per creare un HttpResource, si utilizza la funzione ~httpResource~, che restituisce un oggetto reattivo per gestire le richieste HTTP.
+**resource()**
 
-*** Esempio di HttpResource
+`resource()` è pensata per casi in cui si vuole derivare un valore da una `Promise` (funzione asincrona). Il valore derivato viene esposto come un `Signal` e può essere facilmente utilizzato nei template.
+
 #+begin_src typescript
-import { httpResource } from '@angular/common/http';
-
-const resource = httpResource('https://api.example.com/data');
-
-resource.get().subscribe((data) => {
-  console.log('Data received:', data);
+const user = resource({
+  loader: () => fetch('/api/user').then(res => res.json())
 });
 #+end_src
 
-** Conclusione
-Gli HttpResource semplificano la gestione delle richieste HTTP in Angular, migliorando la reattività e l'integrazione con il framework.
+Utilizzo nel template con `@defer`:
+
+#+begin_src html
+@defer (when user.ready) {
+  <p>{{ user()?.name }}</p>
+} @loading {
+  <p>Caricamento...</p>
+} @error {
+  <p>Errore: {{ user.error()?.message }}</p>
+}
+#+end_src
+
+**rxResource()**
+
+`rxResource()` si basa su `Observable` invece che `Promise`, ed è pensato per chi lavora con RxJS. Permette il ricaricamento automatico quando cambiano i parametri di input.
+
+#+begin_src typescript
+const userId = signal(1);
+
+const user = rxResource({
+  source: () => userId(),
+  loader: (id) => inject(HttpClient).get(`/api/users/${id}`)
+});
+#+end_src
+
+**httpResource()**
+
+`httpResource()` è una forma specializzata di `rxResource()` pensata per lavorare direttamente con `HttpClient` di Angular. Si basa anch’essa su `Signal` e `Observable`, ma integra al meglio la dependency injection.
+
+#+begin_src typescript
+const postId = signal(42);
+
+const post = httpResource({
+  source: () => postId(),
+  url: (id) => `/api/posts/${id}`
+});
+#+end_src
+
+**Cos'è una ResourceRef**
+
+Ogni chiamata a `resource()`, `rxResource()` o `httpResource()` restituisce un oggetto di tipo `ResourceRef<T>`, dove `T` è il tipo del dato ritornato. Questo oggetto è sia un `Signal<T | undefined>` sia un contenitore di metadati sullo stato corrente della risorsa.
+
+*** Caratteristiche di `ResourceRef`
+
+Un `ResourceRef` espone:
+
+- `()` – legge il valore attuale della risorsa (come un `Signal`)
+- `.state()` – restituisce lo stato corrente della risorsa (`'pending' | 'ready' | 'errored'`)
+- `.error()` – se presente, restituisce l’oggetto errore
+- `.track()` – si usa per attivare il tracciamento reattivo
+- `.replay()` – forza il ricaricamento della risorsa
+- `.ready` – alias per `state() === 'ready'`
+
+*** Esempio
+
+#+begin_src typescript
+const user = resource({
+  loader: () => fetch('/api/user').then(res => res.json())
+});
+
+effect(() => {
+  if (user.state() === 'errored') {
+    console.error('Errore:', user.error());
+  }
+});
+#+end_src
+
+**Quando usare quale funzione**
+
+#+CAPTION: Tabella di confronto tra resource, rxResource e httpResource
+| Funzione        | Input principale       | Tipologia dati     | Reattività | Use-case ideale                             |
+|-----------------+------------------------+---------------------+------------+----------------------------------------------|
+| `resource()`     | Funzione asincrona      | Promise              | No         | Dati statici, fetch semplice all’avvio       |
+| `rxResource()`   | Signal + loader (Obs)   | Observable           | Sì         | Chiamate dipendenti da Signal dinamici       |
+| `httpResource()` | Signal + url/template   | Observable (HTTP)    | Sì         | REST API in Angular con parametri dinamici   |
+
+**Conclusione**
+
+Queste API rappresentano un passo importante nella semplificazione della gestione del caricamento dei dati in Angular moderno. Combinate con `@defer`, permettono di ottenere interfacce utente reattive, fluide e ottimizzate, scritte in modo dichiarativo e idiomatico.
 
 #+BEGIN_COMMENT
  -----
