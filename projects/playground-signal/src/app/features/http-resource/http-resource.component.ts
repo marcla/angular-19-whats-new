@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 
-import { WeatherInfoComponent } from './ui/weather-info.component';
+import { MovieInfoComponent } from './ui/movie-info.component';
 
 @Component({
-  imports: [WeatherInfoComponent],
-  template: `<app-weather-info />`,
+  imports: [MovieInfoComponent],
+  template: `<app-movie-info />`,
 })
 export class HttpResourceComponent {}

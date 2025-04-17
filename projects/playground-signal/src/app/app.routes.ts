@@ -46,4 +46,10 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/linked-signal/linked-signal.component').then((c) => c.LinkedSignalComponent),
   },
+  {
+    path: 'http-resource',
+    title: 'Http Resource',
+    loadComponent: () =>
+      import('./features/http-resource/http-resource.component').then((c) => c.HttpResourceComponent),
+  },
 ];
